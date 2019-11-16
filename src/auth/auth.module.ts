@@ -6,9 +6,11 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import {JwtStrategy} from '../auth/jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserRespository } from '../users/user.repository';
 
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule.register({
+  imports: [TypeOrmModule.forFeature([UserRespository]), UsersModule, PassportModule, JwtModule.register({
     secret: 'secret key',
     signOptions: {expiresIn: '2h'},
   })],
