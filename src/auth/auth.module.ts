@@ -7,7 +7,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import {JwtStrategy} from '../auth/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRespository } from '../users/user.repository';
+import { UserRespository } from '../users/users.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserRespository]), UsersModule, PassportModule, JwtModule.register({

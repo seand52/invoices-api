@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {UsersService} from '../users/users.service';
 import {JwtService} from '@nestjs/jwt';
 import { UserPayload } from '../users/users.dto';
-import { UserRespository } from '../users/user.repository';
+import { UserRespository } from '../users/users.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
