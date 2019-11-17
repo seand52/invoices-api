@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import * as bycript from 'bcrypt';
+import { Clients } from '../clients/clients.entity';
 
 @Entity()
 export class Users {
@@ -14,6 +15,9 @@ export class Users {
 
   @Column('varchar', {nullable: false })
   salt: string;
+
+  @OneToMany(type => Clients, clients => clients.user )
+    clients: Clients[];
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bycript.hash(password, this.salt);
