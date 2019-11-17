@@ -1,4 +1,4 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne} from 'typeorm';
+import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn} from 'typeorm';
 import { IsEmail } from 'class-validator';
 import { Users } from '../users/users.entity';
 
@@ -43,6 +43,12 @@ export class Clients extends BaseEntity {
 
   @Column('int', { nullable: false })
   userId: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(type => Users, user => user.clients, {nullable: false})
     user: Users;
