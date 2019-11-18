@@ -42,9 +42,9 @@ export class ClientsController {
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
   @UsePipes(ValidationPipe)
-  async updateClient(@Param('id', ParseIntPipe) clientId: number, @Body() clientData: UpdateClientDto, @Request() req: any): Promise<void> {
+  async updateClient(@Param('id', ParseIntPipe) clientId: number, @Body() clientData: UpdateClientDto, @Request() req: any): Promise<string> {
     const {userId} = req.user;
-    await this.clientsService.updateClientById(clientData, clientId, userId);
+    return this.clientsService.updateClientById(clientData, clientId, userId);
   }
 
 }

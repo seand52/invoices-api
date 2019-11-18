@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import {paginate, Pagination, IPaginationOptions} from 'nestjs-typeorm-paginate';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ClientsRepository } from './clients.repository';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -25,13 +25,12 @@ export class ClientsService {
   async paginateClients(options, userId): Promise<Pagination<Clients>> {
     const queryBuilder = this.clientsRepository.createQueryBuilder('client');
     queryBuilder.where('client.userId = :userId', { userId }).orderBy('client.name', 'DESC');
-    const test = await paginate<Clients>(queryBuilder, options);
-    return test;
+    return paginate<Clients>(queryBuilder, options);
   }
 
-  async createClient(clientData: CreateClientDto, user) {
+  async createClient(clientData: CreateClientDto, userId) {
     try {
-      const client = await this.clientsRepository.insert({...clientData, user});
+      const client = await this.clientsRepository.insert({...clientData, userId});
       return client.identifiers[0].id;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
@@ -50,11 +49,11 @@ export class ClientsService {
     if (client.userId !== userId ) {
       throw new UnauthorizedException('You do not have permission to perform this request');
     }
-    await this.clientsRepository.delete(id);
+    await this.clientsRepository.delete(client.id);
     return 'OK';
   }
 
-  async updateClientById(clientData: UpdateClientDto, clientId, userId: number): Promise<void> {
+  async updateClientById(clientData: UpdateClientDto, clientId, userId: number): Promise<string> {
     const client = await this.clientsRepository.findOne(clientId);
     if (!client) {
       throw new NotFoundException(`Client with ID ${clientId} not found`);
@@ -63,6 +62,7 @@ export class ClientsService {
     if (client.userId !== userId ) {
       throw new UnauthorizedException('You do not have permission to perform this request');
     }
-    await this.clientsRepository.update(clientId, clientData);
+    await this.clientsRepository.update(client.id, clientData);
+    return 'OK';
   }
 }
