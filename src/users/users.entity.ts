@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, Up
 import * as bycript from 'bcrypt';
 import { Clients } from '../clients/clients.entity';
 import { Products } from '../products/products.entity';
+import { BusinessInfo } from '../business-info/business-info.entity';
 
 @Entity()
 export class Users {
@@ -28,6 +29,9 @@ export class Users {
 
   @OneToMany(type => Products, products => products.user )
   products: Products[];
+
+  @OneToMany(type => BusinessInfo, businessInfo => businessInfo.user )
+  businessInfo: BusinessInfo[];
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bycript.hash(password, this.salt);
