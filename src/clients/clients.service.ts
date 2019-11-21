@@ -5,12 +5,15 @@ import { ClientsRepository } from './clients.repository';
 import { CreateClientDto } from './dto/create-client.dto';
 import { Clients } from './clients.entity';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { InvoicesRepository } from '../invoices/invoices.repository';
 
 @Injectable()
 export class ClientsService {
   constructor(
     @InjectRepository(ClientsRepository)
     private clientsRepository: ClientsRepository,
+    @InjectRepository(InvoicesRepository)
+    private invoicesRepository: InvoicesRepository,
   ) {}
 
   async getClientById(id: number): Promise<Clients> {
@@ -64,5 +67,10 @@ export class ClientsService {
     }
     await this.clientsRepository.update(client.id, clientData);
     return 'OK';
+  }
+
+  async getClientInvoices(clientId: number) {
+    const invoices = await this.invoicesRepository.findClientInvoices(clientId);
+    return invoices;
   }
 }

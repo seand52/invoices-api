@@ -1,6 +1,7 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
 import { IsEmail } from 'class-validator';
 import { Users } from '../users/users.entity';
+import { Invoices } from '../invoices/invoices.entity';
 
 @Entity()
 export class Clients extends BaseEntity {
@@ -40,6 +41,9 @@ export class Clients extends BaseEntity {
   @Column('varchar', {nullable: false, default: '', length: 55, unique: true})
   @IsEmail()
   email: string;
+
+  @OneToMany(type => Invoices, invoices => invoices.client )
+  invoices: Invoices[];
 
   @Column('int', { nullable: false })
   userId: number;

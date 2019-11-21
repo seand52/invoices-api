@@ -1,7 +1,12 @@
-import {Test} from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { ClientsService } from './clients.service';
 import { ClientsRepository } from './clients.repository';
-import { NotFoundException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InvoicesRepository } from '../invoices/invoices.repository';
 
 const mockClientsRepository = () => ({
   findOne: jest.fn(),
@@ -9,6 +14,9 @@ const mockClientsRepository = () => ({
   delete: jest.fn(),
   update: jest.fn(),
 });
+
+const mockInvoicesRepository = () => ({});
+
 describe('ClientsServices', () => {
   let clientsService;
   let clientsRepository;
@@ -32,7 +40,8 @@ describe('ClientsServices', () => {
     const module = await Test.createTestingModule({
       providers: [
         ClientsService,
-        {provide: ClientsRepository, useFactory: mockClientsRepository},
+        { provide: ClientsRepository, useFactory: mockClientsRepository },
+        { provide: InvoicesRepository, useFactory: mockInvoicesRepository },
       ],
     }).compile();
 
@@ -49,28 +58,33 @@ describe('ClientsServices', () => {
       expect(clientsRepository.findOne).toHaveBeenCalledWith(1);
     });
 
-    it ('throws an error if the client does not exist', async () => {
+    it('throws an error if the client does not exist', async () => {
       clientsRepository.findOne.mockResolvedValue(null);
-      expect(clientsService.getClientById(1)).rejects.toThrow(NotFoundException);
+      expect(clientsService.getClientById(1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('Create clients', () => {
     it('should successfully creates a client', async () => {
       clientsRepository.insert.mockResolvedValue({
-        identifiers: [
-          mockClient,
-        ],
+        identifiers: [mockClient],
       });
 
       const result = await clientsService.createClient(mockClient, 1);
       expect(result).toEqual(mockClient.id);
-      expect(clientsRepository.insert).toHaveBeenCalledWith({...mockClient, userId: 1});
+      expect(clientsRepository.insert).toHaveBeenCalledWith({
+        ...mockClient,
+        userId: 1,
+      });
     });
 
     it('should not duplicate a client', async () => {
-      clientsRepository.insert.mockRejectedValue({code: 'ER_DUP_ENTRY'});
-      expect(clientsService.createClient(mockClient, 1)).rejects.toThrow(ConflictException);
+      clientsRepository.insert.mockRejectedValue({ code: 'ER_DUP_ENTRY' });
+      expect(clientsService.createClient(mockClient, 1)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -85,12 +99,16 @@ describe('ClientsServices', () => {
 
     it('should throw error if no client is found with that id', async () => {
       clientsRepository.findOne.mockResolvedValue(null);
-      expect(clientsService.deleteClientById(mockClient.id, 5)).rejects.toThrow(NotFoundException);
+      expect(clientsService.deleteClientById(mockClient.id, 5)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw error if trying to delete a client of another user', async () => {
       clientsRepository.findOne.mockResolvedValue(mockClient);
-      expect(clientsService.deleteClientById(mockClient.id, 1)).rejects.toThrow(UnauthorizedException);
+      expect(clientsService.deleteClientById(mockClient.id, 1)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -102,20 +120,31 @@ describe('ClientsServices', () => {
     it('should successfully update a client if the client belongs to that user', async () => {
       clientsRepository.findOne.mockResolvedValue(mockClient);
       expect(clientsRepository.update).not.toHaveBeenCalled();
-      const result = await clientsService.updateClientById(clientData, mockClient.id, 5);
+      const result = await clientsService.updateClientById(
+        clientData,
+        mockClient.id,
+        5,
+      );
       expect(result).toEqual('OK');
-      expect(clientsRepository.update).toHaveBeenCalledWith(mockClient.id, clientData);
+      expect(clientsRepository.update).toHaveBeenCalledWith(
+        mockClient.id,
+        clientData,
+      );
     });
 
     it('should throw error if no client is found with that id', async () => {
       clientsRepository.findOne.mockResolvedValue(null);
-      expect(clientsService.updateClientById(mockClient.id, 5)).rejects.toThrow(NotFoundException);
+      expect(clientsService.updateClientById(mockClient.id, 5)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(clientsRepository.update).not.toHaveBeenCalled();
     });
 
     it('should throw error if trying to delete a client of another user', async () => {
       clientsRepository.findOne.mockResolvedValue(mockClient);
-      expect(clientsService.updateClientById(mockClient.id, 1)).rejects.toThrow(UnauthorizedException);
+      expect(clientsService.updateClientById(mockClient.id, 1)).rejects.toThrow(
+        UnauthorizedException,
+      );
       expect(clientsRepository.update).not.toHaveBeenCalled();
     });
   });

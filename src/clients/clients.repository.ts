@@ -3,6 +3,10 @@ import { Clients } from './clients.entity';
 
 @EntityRepository(Clients)
 export class ClientsRepository extends Repository<Clients> {
-
-
+  findClientInvoices(clientId) {
+    return this.createQueryBuilder('invoice')
+    // .select(['invoice', 'client.name', 'client.email', 'client.telephone1'])
+    .where('invoice.clientId = :clientId', {clientId})
+    .getMany();
+  }
 }

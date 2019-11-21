@@ -22,6 +22,11 @@ export class ClientsController {
     return this.clientsService.getClientById(id);
   }
 
+  @Get(':clientId/invoices')
+  async getClientInvoices(@Param('clientId', ParseIntPipe) clientId: number) {
+    return this.clientsService.getClientInvoices(clientId);
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
   async createClient(@Body() clientData: CreateClientDto, @Request() req: any): Promise<Clients> {

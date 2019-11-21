@@ -1,5 +1,6 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
 import { Users } from '../users/users.entity';
+import { InvoiceToProducts } from '../invoice-products/invoice-products.entity';
 
 @Entity()
 export class Products extends BaseEntity {
@@ -21,7 +22,10 @@ export class Products extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => Users, user => user.clients, {nullable: false})
+  @ManyToOne(type => Users, user => user.products, {nullable: false})
     user: Users;
+
+  @OneToMany(type => InvoiceToProducts, invoiceToProducts => invoiceToProducts.product)
+    public invoiceToProducts!: InvoiceToProducts[];
 
 }
