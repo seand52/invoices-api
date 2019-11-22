@@ -1,5 +1,7 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { PaymentType } from '../invoices.entity';
+import { Transform } from 'class-transformer';
 
 export class InvoiceSettingsDto {
   @IsNotEmpty()
@@ -12,13 +14,18 @@ export class InvoiceSettingsDto {
 
   @IsOptional()
   @ApiModelProperty({ description: 'user selection of re' })
-  re: boolean;
+  re: number;
 
   @IsOptional()
   @ApiModelProperty({ description: 'transport price' })
-  transportPrice: boolean;
+  transportPrice: number;
+
+  @IsNotEmpty()
+  @IsEnum(PaymentType)
+  @ApiModelProperty({ description: 'transport price' })
+  paymentType: PaymentType;
 
   @IsOptional()
   @ApiModelProperty({ description: 'tax selection' })
-  tax: boolean;
+  tax: number;
 }

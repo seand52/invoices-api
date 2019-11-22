@@ -15,11 +15,14 @@ const mockClientsRepository = () => ({
   update: jest.fn(),
 });
 
-const mockInvoicesRepository = () => ({});
+const mockInvoicesRepository = () => ({
+  findClientInvoices: jest.fn(),
+});
 
 describe('ClientsServices', () => {
   let clientsService;
   let clientsRepository;
+  let invoicesRepository;
   const mockClient = {
     id: 5,
     name: 'string',
@@ -47,6 +50,9 @@ describe('ClientsServices', () => {
 
     clientsService = await module.get<ClientsService>(ClientsService);
     clientsRepository = await module.get<ClientsRepository>(ClientsRepository);
+    invoicesRepository = await module.get<InvoicesRepository>(
+      InvoicesRepository,
+    );
   });
 
   describe('getClientById', () => {
@@ -146,6 +152,30 @@ describe('ClientsServices', () => {
         UnauthorizedException,
       );
       expect(clientsRepository.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('get client invoices', () => {
+    it('should retrieve the invoices for a specific client', async () => {
+      const mockResult = [
+        {
+          id: 1,
+          totalPrice: '29.99',
+          re: '5.20',
+          transportPrice: '10.00',
+          paymentType: 'Transferencia',
+          userId: 15,
+          clientId: 2,
+          date: '2019-11-20T20:26:15.000Z',
+          createdAt: '2019-11-20T15:47:08.361Z',
+          updatedAt: '2019-11-20T15:47:08.361Z',
+        },
+      ];
+      expect(invoicesRepository.findClientInvoices).not.toHaveBeenCalled();
+      invoicesRepository.findClientInvoices.mockResolvedValue(mockResult);
+      const result = await clientsService.getClientInvoices(15);
+      expect(result).toEqual(mockResult);
+      expect(invoicesRepository.findClientInvoices).toHaveBeenCalledWith(15);
     });
   });
 });

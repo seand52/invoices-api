@@ -1,4 +1,13 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Users } from '../users/users.entity';
 import { InvoiceToProducts } from '../invoice-products/invoice-products.entity';
 
@@ -7,10 +16,10 @@ export class Products extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', {nullable: false,  length: 255 })
+  @Column('varchar', { nullable: false, length: 255 })
   description: string;
 
-  @Column('decimal', {nullable: false, precision: 10, scale: 2 })
+  @Column('decimal', { nullable: false, precision: 10, scale: 2 })
   price: number;
 
   @Column('int', { nullable: false })
@@ -22,10 +31,12 @@ export class Products extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => Users, user => user.products, {nullable: false})
-    user: Users;
+  @ManyToOne(type => Users, user => user.products, { nullable: false })
+  user: Users;
 
-  @OneToMany(type => InvoiceToProducts, invoiceToProducts => invoiceToProducts.product)
-    public invoiceToProducts!: InvoiceToProducts[];
-
+  @OneToMany(
+    type => InvoiceToProducts,
+    invoiceToProducts => invoiceToProducts.product,
+  )
+  public invoiceToProducts!: InvoiceToProducts[];
 }

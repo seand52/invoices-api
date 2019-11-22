@@ -16,7 +16,10 @@ export class UsersService {
   async create(data: UserDto) {
     const salt = await bycript.genSalt();
     const password = await this.hashPassword(data.password, salt);
-    await this.userRepository.signUp({username: data.username, password}, salt);
+    await this.userRepository.signUp(
+      { username: data.username, password },
+      salt,
+    );
     return 'success';
   }
 
@@ -25,8 +28,8 @@ export class UsersService {
   }
 
   async validateUserPassword(credentials: UserDto): Promise<boolean> {
-    const {username, password } = credentials;
-    const user = await this.userRepository.findOne({username});
-    return user && await user.validatePassword(password);
+    const { username, password } = credentials;
+    const user = await this.userRepository.findOne({ username });
+    return user && (await user.validatePassword(password));
   }
 }

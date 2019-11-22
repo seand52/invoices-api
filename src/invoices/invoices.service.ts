@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+  InternalServerErrorException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoicesRepository } from './invoices.repository';
 import { Pagination, paginate } from 'nestjs-typeorm-paginate';
@@ -6,11 +12,9 @@ import { Invoices } from './invoices.entity';
 import { ClientsRepository } from '../clients/clients.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { Products } from 'src/products/products.entity';
+import { InvoiceSettingsDto } from './dto/invoice-settings.dto';
+import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
 
-interface FullProductData extends Products {
-  quantity: number;
-}
 @Injectable()
 export class InvoicesService {
   constructor(
@@ -20,6 +24,8 @@ export class InvoicesService {
     private clientsRepository: ClientsRepository,
     @InjectRepository(ProductsRepository)
     private productsRepository: ProductsRepository,
+    @InjectRepository(InvoiceToProductsRepository)
+    private invoiceToProductsRepository: InvoiceToProductsRepository,
   ) {}
 
   async paginateInvoices(options, userId): Promise<Pagination<Invoices>> {
@@ -42,31 +48,102 @@ export class InvoicesService {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
     }
     if (invoice.userId !== userId) {
-      throw new UnauthorizedException('You do not have permission to perform this request');
+      throw new UnauthorizedException(
+        'You do not have permission to perform this request',
+      );
     }
 
     await this.invoicesRepository.delete(invoice.id);
     return 'OK';
   }
 
-  calculateTotalprice(data: FullProductData) {}
+  calculateTotalprice(products, settings: InvoiceSettingsDto) {
+    try {
+      const subTotal = products.reduce(
+        (accum, curr) => accum + curr.price * curr.quantity,
+        0,
+      );
+      const iva = subTotal * settings.tax;
+      const re = subTotal * settings.re;
+      const totalWithoutTransport = subTotal + iva + re;
+      const transport = settings.transportPrice || 0;
+      const invoiceTotal = totalWithoutTransport + transport;
+      return Math.round(invoiceTotal * 100) / 100;
+    } catch (err) {
+      throw new InternalServerErrorException('Error calculating the price');
+    }
+  }
 
-  async saveInvoice(invoiceData: CreateInvoiceDto, userId) {
-    const { clientId } = invoiceData.settings;
+  async retrieveRelevantData(invoiceData, clientId) {
     const productIds = invoiceData.products.map(item => item.id);
     const [client, products] = await Promise.all([
       this.clientsRepository.findOne(clientId),
       this.productsRepository.retrieveProductDetails(productIds),
     ]);
-    const fullProductData: any = products.map(product => ({
+    const fullProductData = products.map(product => ({
       ...product,
-      quantity: invoiceData.products.find(item => item.id === product.id).quantity,
+      quantity: invoiceData.products.find(item => item.id === product.id)
+        .quantity,
     }));
+    return {
+      products: fullProductData,
+      client,
+    };
+  }
 
-    // calculate totalPrice
-    this.calculateTotalprice(fullProductData);
-    // insert data
+  async saveInvoice(invoiceData: CreateInvoiceDto, userId) {
+    const { clientId } = invoiceData.settings;
+    const { client, products } = await this.retrieveRelevantData(
+      invoiceData,
+      clientId,
+    );
 
-    // print PDF
+    const totalPrice = this.calculateTotalprice(products, invoiceData.settings);
+
+    const result = await this.invoicesRepository.createInvoice({
+      ...invoiceData.settings,
+      totalPrice,
+      userId,
+    });
+
+    await this.invoiceToProductsRepository.storeInvoiceProducts(
+      result.identifiers[0].id,
+      products,
+    );
+    return 'OK';
+  }
+
+  async updateInvoice(invoiceData: CreateInvoiceDto, invoiceId, userId) {
+    const { clientId } = invoiceData.settings;
+    const invoice = await this.invoicesRepository.findOne(invoiceId);
+    if (!invoice) {
+      throw new NotFoundException(
+        'Could not find the invoice you are trying to edit',
+      );
+    }
+    if (invoice.userId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to modify this invoice',
+      );
+    }
+    const { client, products } = await this.retrieveRelevantData(
+      invoiceData,
+      clientId,
+    );
+    const totalPrice = this.calculateTotalprice(products, invoiceData.settings);
+
+    await this.invoicesRepository.updateInvoice(
+      {
+        ...invoiceData.settings,
+        totalPrice,
+        userId,
+      },
+      invoiceId,
+    );
+
+    await this.invoiceToProductsRepository.updateInvoiceProducts(
+      invoiceId,
+      products,
+    );
   }
 }
