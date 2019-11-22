@@ -1,6 +1,12 @@
-import { Injectable, UnauthorizedException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BusinessInfoRepository } from './business-info.repository';
+import { BusinessInfo } from './business-info.entity';
 
 @Injectable()
 export class BusinessInfoService {
@@ -10,7 +16,7 @@ export class BusinessInfoService {
   ) {}
 
   async getBusinessInfo(userId) {
-    const [info] = await this.businessInfoRepository.find({userId});
+    const [info] = await this.businessInfoRepository.find({ userId });
 
     if (!info) {
       return {};
@@ -18,11 +24,10 @@ export class BusinessInfoService {
     return info;
   }
 
-   async createBusinessInfo(businessInfoData, userId) {
+  async createBusinessInfo(businessInfoData, userId) {
     try {
-      await this.businessInfoRepository.insert({...businessInfoData, userId});
+      await this.businessInfoRepository.insert({ ...businessInfoData, userId });
     } catch (err) {
-
       if (err.code === 'ER_DUP_ENTRY') {
         throw new ConflictException('DUPLICATE_BUSINESS');
       } else {
@@ -31,14 +36,16 @@ export class BusinessInfoService {
     }
   }
 
-  async updateBusinessInfo(businessInfoData, userId) {
-    const [info] = await this.businessInfoRepository.find({userId});
+  async updateBusinessInfo(businessInfoData, userId): Promise<BusinessInfo> {
+    const [info] = await this.businessInfoRepository.find({ userId });
 
     if (info.userId !== userId) {
-      throw new UnauthorizedException('You do not have permission to perform this request');
+      throw new UnauthorizedException(
+        'You do not have permission to perform this request',
+      );
     }
 
-    this.businessInfoRepository.update(info.id, businessInfoData);
-    return 'OK';
+    await this.businessInfoRepository.update(info.id, businessInfoData);
+    return this.businessInfoRepository.findOne({ userId });
   }
 }

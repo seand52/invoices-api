@@ -99,7 +99,7 @@ describe('ClientsServices', () => {
       clientsRepository.findOne.mockResolvedValue(mockClient);
       expect(clientsRepository.delete).not.toHaveBeenCalled();
       const result = await clientsService.deleteClientById(mockClient.id, 5);
-      expect(result).toEqual('OK');
+      expect(result).toEqual({ message: 'OK' });
       expect(clientsRepository.delete).toHaveBeenCalledWith(mockClient.id);
     });
 
@@ -131,7 +131,7 @@ describe('ClientsServices', () => {
         mockClient.id,
         5,
       );
-      expect(result).toEqual('OK');
+      expect(result).toEqual(mockClient);
       expect(clientsRepository.update).toHaveBeenCalledWith(
         mockClient.id,
         clientData,
@@ -160,9 +160,9 @@ describe('ClientsServices', () => {
       const mockResult = [
         {
           id: 1,
-          totalPrice: '29.99',
-          re: '5.20',
-          transportPrice: '10.00',
+          totalPrice: 29.99,
+          re: 5.2,
+          transportPrice: 10.0,
           paymentType: 'Transferencia',
           userId: 15,
           clientId: 2,

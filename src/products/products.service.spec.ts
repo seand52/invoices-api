@@ -1,7 +1,11 @@
-import {Test} from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { ProductsService } from './products.service';
 import { ProductsRepository } from './products.repository';
-import { NotFoundException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 const mockProductsRepository = () => ({
   findOne: jest.fn(),
@@ -23,12 +27,14 @@ describe('ProductsServices', () => {
     const module = await Test.createTestingModule({
       providers: [
         ProductsService,
-        {provide: ProductsRepository, useFactory: mockProductsRepository},
+        { provide: ProductsRepository, useFactory: mockProductsRepository },
       ],
     }).compile();
 
     productsService = await module.get<ProductsService>(ProductsService);
-    productsRepository = await module.get<ProductsRepository>(ProductsRepository);
+    productsRepository = await module.get<ProductsRepository>(
+      ProductsRepository,
+    );
   });
 
   describe('getProductById', () => {
@@ -40,28 +46,33 @@ describe('ProductsServices', () => {
       expect(productsRepository.findOne).toHaveBeenCalledWith(1);
     });
 
-    it ('throws an error if the product does not exist', async () => {
+    it('throws an error if the product does not exist', async () => {
       productsRepository.findOne.mockResolvedValue(null);
-      expect(productsService.getProductById(1)).rejects.toThrow(NotFoundException);
+      expect(productsService.getProductById(1)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('Create products', () => {
     it('should successfully creates a product', async () => {
       productsRepository.insert.mockResolvedValue({
-        identifiers: [
-          mockProduct,
-        ],
+        identifiers: [mockProduct],
       });
 
       const result = await productsService.createProduct(mockProduct, 1);
       expect(result).toEqual(mockProduct.id);
-      expect(productsRepository.insert).toHaveBeenCalledWith({...mockProduct, userId: 1});
+      expect(productsRepository.insert).toHaveBeenCalledWith({
+        ...mockProduct,
+        userId: 1,
+      });
     });
 
     it('should not duplicate a product', async () => {
-      productsRepository.insert.mockRejectedValue({code: 'ER_DUP_ENTRY'});
-      expect(productsService.createProduct(mockProduct, 1)).rejects.toThrow(ConflictException);
+      productsRepository.insert.mockRejectedValue({ code: 'ER_DUP_ENTRY' });
+      expect(productsService.createProduct(mockProduct, 1)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -76,12 +87,16 @@ describe('ProductsServices', () => {
 
     it('should throw error if no product is found with that id', async () => {
       productsRepository.findOne.mockResolvedValue(null);
-      expect(productsService.deleteProductById(mockProduct.id, 5)).rejects.toThrow(NotFoundException);
+      expect(
+        productsService.deleteProductById(mockProduct.id, 5),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw error if trying to delete a product of another user', async () => {
       productsRepository.findOne.mockResolvedValue(mockProduct);
-      expect(productsService.deleteProductById(mockProduct.id, 1)).rejects.toThrow(UnauthorizedException);
+      expect(
+        productsService.deleteProductById(mockProduct.id, 1),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -92,20 +107,31 @@ describe('ProductsServices', () => {
     it('should successfully update a product if the product belongs to that user', async () => {
       productsRepository.findOne.mockResolvedValue(mockProduct);
       expect(productsRepository.update).not.toHaveBeenCalled();
-      const result = await productsService.updateProductById(productData, mockProduct.id, 5);
-      expect(result).toEqual('OK');
-      expect(productsRepository.update).toHaveBeenCalledWith(mockProduct.id, productData);
+      const result = await productsService.updateProductById(
+        productData,
+        mockProduct.id,
+        5,
+      );
+      expect(result).toEqual(mockProduct);
+      expect(productsRepository.update).toHaveBeenCalledWith(
+        mockProduct.id,
+        productData,
+      );
     });
 
     it('should throw error if no product is found with that id', async () => {
       productsRepository.findOne.mockResolvedValue(null);
-      expect(productsService.updateProductById(mockProduct.id, 5)).rejects.toThrow(NotFoundException);
+      expect(
+        productsService.updateProductById(mockProduct.id, 5),
+      ).rejects.toThrow(NotFoundException);
       expect(productsRepository.update).not.toHaveBeenCalled();
     });
 
     it('should throw error if trying to delete a product of another user', async () => {
       productsRepository.findOne.mockResolvedValue(mockProduct);
-      expect(productsService.updateProductById(mockProduct.id, 1)).rejects.toThrow(UnauthorizedException);
+      expect(
+        productsService.updateProductById(mockProduct.id, 1),
+      ).rejects.toThrow(UnauthorizedException);
       expect(productsRepository.update).not.toHaveBeenCalled();
     });
   });

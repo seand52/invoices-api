@@ -99,7 +99,7 @@ describe('InvoicesService', () => {
       invoicesRepository.findOne.mockResolvedValue(invoiceResult);
       expect(invoicesRepository.delete).not.toHaveBeenCalled();
       const result = await invoiceService.deleteInvoiceById(1, 15);
-      expect(result).toEqual('OK');
+      expect(result).toEqual({ message: 'OK' });
       expect(invoicesRepository.delete).toHaveBeenCalledWith(1);
     });
 

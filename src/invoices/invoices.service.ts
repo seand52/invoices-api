@@ -14,6 +14,7 @@ import { ProductsRepository } from '../products/products.repository';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceSettingsDto } from './dto/invoice-settings.dto';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
+import { FullInvoiceDetails } from './dto/output.dto';
 
 @Injectable()
 export class InvoicesService {
@@ -38,11 +39,15 @@ export class InvoicesService {
     return paginate<Invoices>(queryBuilder, options);
   }
 
-  async getInvoiceById(id: number) {
-    return this.invoicesRepository.retrieveInvoiceInfo(id);
+  async getInvoiceById(id: number): Promise<FullInvoiceDetails> {
+    const [invoice] = await this.invoicesRepository.retrieveInvoiceInfo(id);
+    return invoice;
   }
 
-  async deleteInvoiceById(id: number, userId: number): Promise<string> {
+  async deleteInvoiceById(
+    id: number,
+    userId: number,
+  ): Promise<{ message: string }> {
     const invoice = await this.invoicesRepository.findOne(id);
     if (!invoice) {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
@@ -54,7 +59,7 @@ export class InvoicesService {
     }
 
     await this.invoicesRepository.delete(invoice.id);
-    return 'OK';
+    return { message: 'OK' };
   }
 
   calculateTotalprice(products, settings: InvoiceSettingsDto) {

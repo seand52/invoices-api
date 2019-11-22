@@ -1,4 +1,10 @@
-import { Injectable, ConflictException, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductsRepository } from './products.repository';
@@ -30,7 +36,10 @@ export class ProductsService {
 
   async createProduct(productData: CreateProductDto, userId) {
     try {
-      const product = await this.productsRepository.insert({...productData, userId});
+      const product = await this.productsRepository.insert({
+        ...productData,
+        userId,
+      });
       return product.identifiers[0].id;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
@@ -46,23 +55,31 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-    if (product.userId !== userId ) {
-      throw new UnauthorizedException('You do not have permission to perform this request');
+    if (product.userId !== userId) {
+      throw new UnauthorizedException(
+        'You do not have permission to perform this request',
+      );
     }
     await this.productsRepository.delete(product.id);
     return 'OK';
   }
 
-  async updateProductById(productData: UpdateProductDto, productId, userId: number): Promise<string> {
+  async updateProductById(
+    productData: UpdateProductDto,
+    productId,
+    userId: number,
+  ): Promise<Products> {
     const product = await this.productsRepository.findOne(productId);
     if (!product) {
       throw new NotFoundException(`Product with ID ${productId} not found`);
     }
 
-    if (product.userId !== userId ) {
-      throw new UnauthorizedException('You do not have permission to perform this request');
+    if (product.userId !== userId) {
+      throw new UnauthorizedException(
+        'You do not have permission to perform this request',
+      );
     }
     await this.productsRepository.update(product.id, productData);
-    return 'OK';
+    return this.productsRepository.findOne(productId);
   }
 }

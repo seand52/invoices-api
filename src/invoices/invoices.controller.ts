@@ -20,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Invoices } from './invoices.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { FullInvoiceDetails } from './dto/output.dto';
 
 @Controller('invoices')
 @UseGuards(AuthGuard('jwt'))
@@ -42,7 +43,9 @@ export class InvoicesController {
   }
 
   @Get(':id')
-  async getInvoice(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async getInvoice(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<FullInvoiceDetails> {
     return this.invoicesService.getInvoiceById(id);
   }
 
@@ -50,7 +53,7 @@ export class InvoicesController {
   async deleteProduct(
     @Param('id', ParseIntPipe) id: number,
     @Request() req: any,
-  ): Promise<string> {
+  ): Promise<{ message: string }> {
     const { userId } = req.user;
     return this.invoicesService.deleteInvoiceById(id, userId);
   }

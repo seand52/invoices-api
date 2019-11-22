@@ -3,8 +3,8 @@ import { Invoices } from './invoices.entity';
 
 @EntityRepository(Invoices)
 export class InvoicesRepository extends Repository<Invoices> {
-  retrieveInvoiceInfo(id) {
-    return this.createQueryBuilder('invoice')
+  async retrieveInvoiceInfo(id) {
+    const invoices = await this.createQueryBuilder('invoice')
       .leftJoin('invoice.client', 'client')
       .leftJoin('invoice.invoiceToProducts', 'itp')
       .leftJoin('itp.product', 'product')
@@ -18,12 +18,14 @@ export class InvoicesRepository extends Repository<Invoices> {
       ])
       .where('invoice.id = :id', { id })
       .getMany();
+    return this.formatInvoices(invoices);
   }
 
-  findClientInvoices(clientId) {
-    return this.createQueryBuilder('invoice')
+  async findClientInvoices(clientId) {
+    const invoices = await this.createQueryBuilder('invoice')
       .where('invoice.clientId = :clientId', { clientId })
       .getMany();
+    return this.formatInvoices(invoices);
   }
 
   createInvoice(settingsData) {
@@ -41,5 +43,14 @@ export class InvoicesRepository extends Repository<Invoices> {
       .set(updateData)
       .where('id = :invoiceId', { invoiceId })
       .execute();
+  }
+
+  formatInvoices(invoices) {
+    return invoices.map(item => ({
+      ...item,
+      re: parseFloat(item.re),
+      transportPrice: parseFloat(item.transportPrice),
+      totalPrice: parseFloat(item.totalPrice),
+    }));
   }
 }
