@@ -1,7 +1,6 @@
-import { IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEnum, Max, Min } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 import { PaymentType } from '../invoices.entity';
-import { Transform } from 'class-transformer';
 
 export class InvoiceSettingsDto {
   @IsNotEmpty()
@@ -13,7 +12,12 @@ export class InvoiceSettingsDto {
   date: string;
 
   @IsOptional()
-  @ApiModelProperty({ description: 'user selection of re' })
+  @Min(0)
+  @Max(1)
+  @ApiModelProperty({
+    description:
+      'user selection of re. This is the value as a decimal, i.e 0.052 for 5.2%',
+  })
   re: number;
 
   @IsOptional()
@@ -26,6 +30,11 @@ export class InvoiceSettingsDto {
   paymentType: PaymentType;
 
   @IsOptional()
-  @ApiModelProperty({ description: 'tax selection' })
+  @Min(0)
+  @Max(1)
+  @ApiModelProperty({
+    description:
+      'tax selection. This is the value as a decimal, i.e 0.21 for 21%',
+  })
   tax: number;
 }

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import { INestApplication } from '@nestjs/common';
 import * as bycript from 'bcrypt';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +15,7 @@ import {
   invoicesData,
   invoiceProductsData,
 } from './mockResponses/clientResponses';
+import { Connection, EntityManager } from 'typeorm';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -55,14 +56,22 @@ describe('AppController (e2e)', () => {
     invoicesProductsRepository = await module.get<InvoiceToProductsRepository>(
       InvoiceToProductsRepository,
     );
-    await userRepository.query('DELETE FROM users');
+  });
+
+  beforeEach(async () => {
     const salt = await bycript.genSalt();
     const password = await bycript.hash('1234567', salt);
+    const username = `seand52-${Math.random()}`;
     user = await userRepository.save({
-      username: 'seand52',
+      username,
       password,
       salt,
     });
+    const loginResponse = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({ username, password: '1234567' })
+      .expect(201);
+    jwt = loginResponse.body.access_token;
     clients = [
       {
         name: 'string',
@@ -93,15 +102,6 @@ describe('AppController (e2e)', () => {
         userId: user.id,
       },
     ];
-    const loginResponse = await request(app.getHttpServer())
-      .post('/users/login')
-      .send({ username: 'seand52', password: '1234567' })
-      .expect(201);
-    jwt = loginResponse.body.access_token;
-  });
-
-  beforeEach(async () => {
-    await clientsRepository.query('DELETE FROM clients;');
   });
 
   it('/ GET CLIENTS', async () => {
@@ -114,33 +114,32 @@ describe('AppController (e2e)', () => {
   });
 
   it(' / GET client by id', async () => {
-    await clientsRepository.save(clients);
-    const [client] = await clientsRepository.find({ email: clients[0].email });
+    const [_client] = await clientsRepository.save(clients);
     return request(app.getHttpServer())
-      .get(`/clients/${client.id}`)
+      .get(`/clients/${_client.id}`)
       .set('Authorization', 'Bearer ' + jwt)
       .expect(200)
       .expect(res => {
-        res.body.id = client.id;
-        res.body.name = client.name;
-        res.body.shopName = client.shopName;
-        res.body.address = client.address;
-        res.body.city = client.city;
-        res.body.province = client.province;
-        res.body.postcode = client.postcode;
-        res.body.numNif = client.numNif;
-        res.body.numCif = client.numCif;
-        res.body.telephone1 = client.telephone1;
-        res.body.telephone2 = client.telephone2;
-        res.body.email = client.email;
+        res.body.id = _client.id;
+        res.body.name = _client.name;
+        res.body.shopName = _client.shopName;
+        res.body.address = _client.address;
+        res.body.city = _client.city;
+        res.body.province = _client.province;
+        res.body.postcode = _client.postcode;
+        res.body.numNif = _client.numNif;
+        res.body.numCif = _client.numCif;
+        res.body.telephone1 = _client.telephone1;
+        res.body.telephone2 = _client.telephone2;
+        res.body.email = _client.email;
       });
   });
 
   it(' / DELETE Client', async () => {
-    await clientsRepository.save(clients);
-    const [client] = await clientsRepository.find({ email: clients[0].email });
+    const [_client] = await clientsRepository.save(clients);
+    console.log('================================================', _client);
     return request(app.getHttpServer())
-      .delete(`/clients/${client.id}`)
+      .delete(`/clients/${_client.id}`)
       .set('Authorization', 'Bearer ' + jwt)
       .expect(200);
   });
@@ -181,10 +180,9 @@ describe('AppController (e2e)', () => {
   });
 
   it(' / PATCH Client', async () => {
-    await clientsRepository.save(clients);
-    const [client] = await clientsRepository.find({ email: clients[0].email });
+    const [_client] = await clientsRepository.save(clients);
     return request(app.getHttpServer())
-      .patch(`/clients/${client.id}`)
+      .patch(`/clients/${_client.id}`)
       .send({
         name: 'NEW name',
         shopName: 'NEW shopName',
@@ -203,7 +201,7 @@ describe('AppController (e2e)', () => {
 
   it(' / GET client invoices', async () => {
     await clientsRepository.save(clients);
-    const [client] = await clientsRepository.find({ email: clients[0].email });
+    const [client] = await clientsRepository.find({ userId: user.id });
     await productsRepository.save(
       mockProducts.map(item => ({
         ...item,
@@ -241,10 +239,14 @@ describe('AppController (e2e)', () => {
         expect(clientInvoice.userId).toEqual(user.id);
       });
   });
-
+  afterEach(async () => {
+    await userRepository.query(`DELETE FROM users WHERE id=${user.id}`);
+  });
   afterAll(async () => {
+    // await userRepository.query('DELETE FROM users;');
     await clientsRepository.query('DELETE FROM clients;');
-    await clientsRepository.query('DELETE FROM users;');
+    await productsRepository.query('DELETE FROM products;');
+    await productsRepository.query('DELETE FROM invoices;');
     await app.close();
   });
 });

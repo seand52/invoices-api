@@ -80,6 +80,6 @@ export class ProductsService {
       );
     }
     await this.productsRepository.update(product.id, productData);
-    return this.productsRepository.findOne(productId);
+    return this.productsRepository.findOne(product.id);
   }
 }
