@@ -24,20 +24,20 @@ export class Invoices extends BaseEntity {
   id: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
-  totalPrice: string;
+  totalPrice: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
-  re: string;
+  re: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
-  transportPrice: string;
+  transportPrice: number;
 
   @Column('enum', {
     nullable: false,
     enum: PaymentType,
     default: PaymentType.BANK,
   })
-  paymentType: string;
+  paymentType: PaymentType;
 
   @Column('int', { nullable: false })
   userId: number;
@@ -54,9 +54,15 @@ export class Invoices extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => Users, user => user.invoices, { nullable: false })
+  @ManyToOne(type => Users, user => user.invoices, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   user: Users;
-  @ManyToOne(type => Clients, client => client.invoices, { nullable: false })
+  @ManyToOne(type => Clients, client => client.invoices, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   client: Clients;
 
   @OneToMany(

@@ -1,4 +1,12 @@
-import {BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Users } from '../users/users.entity';
 import { IsEmail } from 'class-validator';
 
@@ -7,28 +15,28 @@ export class BusinessInfo extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', {nullable: false,  length: 100 })
+  @Column('varchar', { nullable: false, length: 100 })
   name: string;
 
-  @Column('varchar', {nullable: false,  length: 11 })
+  @Column('varchar', { nullable: false, length: 11 })
   cif: string;
 
-  @Column('varchar', {nullable: false,  length: 255 })
+  @Column('varchar', { nullable: false, length: 255 })
   address: string;
 
-  @Column('varchar', {nullable: false,  length: 7 })
+  @Column('varchar', { nullable: false, length: 7 })
   postcode: string;
 
-  @Column('varchar', {nullable: false,  length: 30 })
+  @Column('varchar', { nullable: false, length: 30 })
   city: string;
 
-  @Column('varchar', {nullable: false,  length: 30 })
+  @Column('varchar', { nullable: false, length: 30 })
   country: string;
 
-  @Column('varchar', {nullable: false,  length: 12 })
+  @Column('varchar', { nullable: false, length: 12 })
   telephone: string;
 
-  @Column('varchar', {nullable: false,  length: 55, unique: true })
+  @Column('varchar', { nullable: false, length: 55, unique: true })
   @IsEmail()
   email: string;
 
@@ -41,7 +49,9 @@ export class BusinessInfo extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => Users, user => user.clients, {nullable: false})
-    user: Users;
-
+  @ManyToOne(type => Users, user => user.clients, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  user: Users;
 }

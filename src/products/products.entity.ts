@@ -31,7 +31,10 @@ export class Products extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => Users, user => user.products, { nullable: false })
+  @ManyToOne(type => Users, user => user.products, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   user: Users;
 
   @OneToMany(
