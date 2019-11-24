@@ -139,10 +139,11 @@ describe('AppController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await userRepository.query(`DELETE FROM USERS WHERE id =${user.id}`);
+    // await userRepository.query(`DELETE FROM USERS WHERE id =${user.id}`);
   });
   afterAll(async () => {
-    await productsRepository.query('DELETE FROM products;');
+    await userRepository.query(`DELETE FROM USERS WHERE id =${user.id}`);
+    // await productsRepository.query('DELETE FROM products;');
     await app.close();
   });
 });

@@ -84,7 +84,7 @@ describe('AppController (e2e)', () => {
         numCif: 'string',
         telephone1: 'string',
         telephone2: 'string',
-        email: 'clientemail1@gmail.com',
+        email: `clientemail-${Math.random()}@gmail.com`,
         userId: user.id,
       },
       {
@@ -98,7 +98,7 @@ describe('AppController (e2e)', () => {
         numCif: 'string',
         telephone1: 'string',
         telephone2: 'string',
-        email: 'clientemail2@gmail.com',
+        email: `clientemail-${Math.random()}@gmail.com`,
         userId: user.id,
       },
     ];
@@ -137,7 +137,6 @@ describe('AppController (e2e)', () => {
 
   it(' / DELETE Client', async () => {
     const [_client] = await clientsRepository.save(clients);
-    console.log('================================================', _client);
     return request(app.getHttpServer())
       .delete(`/clients/${_client.id}`)
       .set('Authorization', 'Bearer ' + jwt)
@@ -158,7 +157,7 @@ describe('AppController (e2e)', () => {
         numCif: 'string',
         telephone1: 'string',
         telephone2: 'string',
-        email: 'clientemail1@gmail.com',
+        email: `clientemail-${Math.random()}@gmail.com`,
         userId: user.id,
       })
       .set('Authorization', 'Bearer ' + jwt)
@@ -174,7 +173,6 @@ describe('AppController (e2e)', () => {
         res.body.numCif = 'string';
         res.body.telephone1 = 'string';
         res.body.telephone2 = 'string';
-        res.body.email = 'clientemail1@gmail.com';
         res.body.userId = user.id;
       });
   });
@@ -240,13 +238,13 @@ describe('AppController (e2e)', () => {
       });
   });
   afterEach(async () => {
-    await userRepository.query(`DELETE FROM users WHERE id=${user.id}`);
+    // await userRepository.query(`DELETE FROM users WHERE id=${user.id}`);
   });
   afterAll(async () => {
-    // await userRepository.query('DELETE FROM users;');
-    await clientsRepository.query('DELETE FROM clients;');
-    await productsRepository.query('DELETE FROM products;');
-    await productsRepository.query('DELETE FROM invoices;');
+    await userRepository.query(`DELETE FROM users WHERE id=${user.id}`);
+    // await clientsRepository.query('DELETE FROM clients;');
+    // await productsRepository.query('DELETE FROM products;');
+    // await productsRepository.query('DELETE FROM invoices;');
     await app.close();
   });
 });

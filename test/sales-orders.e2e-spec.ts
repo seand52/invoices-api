@@ -71,7 +71,7 @@ describe('AppController (e2e)', () => {
     jwt = loginResponse.body.access_token;
   });
 
-  it('/ GET invoices successfully', async () => {
+  it('/ GET all sales orders', async () => {
     const client = await clientsRepository.save({
       name: 'string',
       shopName: 'string',
@@ -86,13 +86,14 @@ describe('AppController (e2e)', () => {
       email: `client-${Math.random()}@gmail.com`,
       userId: user.id,
     });
-    await invoicesRepository.save({
+
+    await salesOrdersRepository.save({
       ...invoicesData,
       userId: user.id,
       clientId: client.id,
     });
     return request(app.getHttpServer())
-      .get('/invoices')
+      .get('/sales-orders')
       .set('Authorization', 'Bearer ' + jwt)
       .expect(200)
       .then(res => {
@@ -102,7 +103,7 @@ describe('AppController (e2e)', () => {
       });
   });
 
-  it('/ GET invoice by id', async () => {
+  it('/ GET sales order by id', async () => {
     const client = await clientsRepository.save({
       name: 'string',
       shopName: 'string',
@@ -117,21 +118,26 @@ describe('AppController (e2e)', () => {
       email: `client-${Math.random()}@gmail.com`,
       userId: user.id,
     });
-    const invoice = await invoicesRepository.save({
+    const salesOrder = await salesOrdersRepository.save({
       ...invoicesData,
       userId: user.id,
       clientId: client.id,
     });
     return request(app.getHttpServer())
-      .get(`/invoices/${invoice.id}`)
+      .get(`/sales-orders/${salesOrder.id}`)
       .set('Authorization', 'Bearer ' + jwt)
       .expect(200)
       .then(res => {
         expect(res.body instanceof Object).toBe(true);
+        expect(res.body.clientId).toEqual(client.id);
+        expect(res.body.totalPrice).toEqual(invoicesData.totalPrice);
+        expect(res.body.re).toEqual(invoicesData.re);
+        expect(res.body.tax).toEqual('0.00');
+        expect(res.body.userId).toEqual(user.id);
       });
   });
 
-  it('/ DELETE invoice', async () => {
+  it('/ DELETE sales order by id', async () => {
     const client = await clientsRepository.save({
       name: 'string',
       shopName: 'string',
@@ -146,18 +152,18 @@ describe('AppController (e2e)', () => {
       email: `client-${Math.random()}@gmail.com`,
       userId: user.id,
     });
-    const invoice = await invoicesRepository.save({
+    const salesOrder = await salesOrdersRepository.save({
       ...invoicesData,
       userId: user.id,
       clientId: client.id,
     });
     return request(app.getHttpServer())
-      .delete(`/invoices/${invoice.id}`)
+      .delete(`/sales-orders/${salesOrder.id}`)
       .set('Authorization', 'Bearer ' + jwt)
       .expect(200);
   });
 
-  it('/ POST invoices', async () => {
+  it('/ POST create sales order', async () => {
     const client = await clientsRepository.save({
       name: 'string',
       shopName: 'string',
@@ -178,7 +184,7 @@ describe('AppController (e2e)', () => {
         userId: user.id,
       })),
     );
-    const invoicePostData = {
+    const salesOrderPostData = {
       settings: {
         totalPrice: 99.99,
         re: 0.052,
@@ -196,76 +202,13 @@ describe('AppController (e2e)', () => {
     };
 
     return request(app.getHttpServer())
-      .post('/invoices')
-      .send(invoicePostData)
+      .post('/sales-orders')
+      .send(salesOrderPostData)
       .set('Authorization', 'Bearer ' + jwt)
       .expect(201);
   });
 
-  it('/ PATCH invoices', async () => {
-    const client = await clientsRepository.save({
-      name: 'string',
-      shopName: 'string',
-      address: 'string',
-      city: 'string',
-      province: 'string',
-      postcode: 'string',
-      numNif: 'string',
-      numCif: 'string',
-      telephone1: 'string',
-      telephone2: 'string',
-      email: `client-${Math.random()}@gmail.com`,
-      userId: user.id,
-    });
-
-    const _mockProducts = await productsRepository.save(
-      mockProducts.map(item => ({
-        ...item,
-        userId: user.id,
-      })),
-    );
-
-    const invoice = await invoicesRepository.save({
-      ...invoicesData,
-      clientId: client.id,
-      userId: user.id,
-    });
-
-    await invoiceProducts.save(
-      invoiceProductsData.map((item, index) => ({
-        ...item,
-        tax: 0.21,
-        invoiceId: invoice.id,
-        productId: _mockProducts[index].id,
-      })),
-    );
-
-    const modifiedInvoiceData = {
-      settings: {
-        totalPrice: 99.99,
-        re: 0,
-        tax: 0,
-        transportPrice: 10,
-        userId: 1,
-        clientId: client.id,
-        date: '12/12/2019',
-        paymentType: PaymentType.CASH,
-      },
-      products: _mockProducts.map(item => ({
-        id: item.id,
-        quantity: 3,
-      })),
-    };
-
-    return request(app.getHttpServer())
-      .patch(`/invoices/${invoice.id}`)
-      .send(modifiedInvoiceData)
-      .set('Authorization', 'Bearer ' + jwt)
-      .expect(200);
-  });
-
-  it(`/POST invoices/transform should convert a sales order to an invoice and remove the
-  sales order and associated products in sales_order_products table`, async () => {
+  it('/ PATCH update sales orders', async () => {
     const client = await clientsRepository.save({
       name: 'string',
       shopName: 'string',
@@ -301,11 +244,12 @@ describe('AppController (e2e)', () => {
         productId: _mockProducts[index].id,
       })),
     );
-    const invoicePostData = {
+
+    const modifiedInvoiceData = {
       settings: {
         totalPrice: 99.99,
-        re: 0.052,
-        tax: 0.21,
+        re: 0,
+        tax: 0,
         transportPrice: 10,
         userId: 1,
         clientId: client.id,
@@ -317,34 +261,17 @@ describe('AppController (e2e)', () => {
         quantity: 3,
       })),
     };
-
     return request(app.getHttpServer())
-      .post(`/invoices/transform-sales-order/${salesOrder.id}`)
-      .send(invoicePostData)
+      .patch(`/sales-orders/${salesOrder.id}`)
+      .send(modifiedInvoiceData)
       .set('Authorization', 'Bearer ' + jwt)
-      .expect(201)
-      .then(async res => {
-        const _salesOrder = await salesOrdersRepository.findOne(salesOrder.id);
-        expect(_salesOrder).toBeFalsy();
-        const _salesOrderProducts = await salesOrdersProductsRepository.find({
-          salesOrderId: salesOrder.id,
-        });
-        expect(_salesOrderProducts.length).toEqual(0);
-        const _invoice = await invoicesRepository.find({ clientId: client.id });
-        expect(_invoice.length).toEqual(1);
-        const _invoiceProducts = await invoiceProducts.find({
-          invoiceId: _invoice[0].id,
-        });
-        expect(_invoiceProducts.length).toEqual(4);
-      });
+      .expect(200);
   });
-
   afterEach(async () => {
     // await userRepository.query(`DELETE FROM USERS WHERE id =${user.id}`);
   });
   afterAll(async () => {
     await userRepository.query(`DELETE FROM USERS WHERE id =${user.id}`);
-    // await invoicesRepository.query('DELETE FROM invoices;');
     // await salesOrdersRepository.query('DELETE FROM sales_orders;');
     // await clientsRepository.query('DELETE FROM clients;');
     // await clientsRepository.query('DELETE FROM products;');
