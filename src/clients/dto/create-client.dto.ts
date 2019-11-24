@@ -3,53 +3,52 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 export class CreateClientDto {
   @IsNotEmpty()
-  @ApiModelProperty({description: 'Client name'})
+  @ApiModelProperty({ description: 'Client name' })
   name: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'Client shop name'})
+  @ApiModelProperty({ description: 'Client shop name' })
   shopName?: string;
 
   @IsNotEmpty()
-  @ApiModelProperty({description: 'Client full address'})
+  @ApiModelProperty({ description: 'Client full address' })
   address: string;
 
   @IsNotEmpty()
-  @ApiModelProperty({description: 'Client city'})
+  @ApiModelProperty({ description: 'Client city' })
   city: string;
 
-  @IsNotEmpty()
-  @ApiModelProperty({description: 'Client province'})
+  @IsOptional()
+  @ApiModelProperty({ description: 'Client province' })
   province: string;
 
   @IsNotEmpty()
-  @ApiModelProperty({description: 'Client postcode'})
+  @ApiModelProperty({ description: 'Client postcode' })
   @MaxLength(7)
   postcode: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'nif number of client'})
+  @ApiModelProperty({ description: 'nif number of client' })
   @MaxLength(11)
   numNif?: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'cif number of client'})
+  @ApiModelProperty({ description: 'cif number of client' })
   @MaxLength(11)
   numCif?: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'Telephone number of client'})
+  @ApiModelProperty({ description: 'Telephone number of client' })
   @MaxLength(12)
   telephone1?: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'Telephone number of client'})
+  @ApiModelProperty({ description: 'Telephone number of client' })
   @MaxLength(12)
   telephone2?: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'Client email'})
+  @ApiModelProperty({ description: 'Client email' })
   @IsEmail()
   email?: string;
-
 }

@@ -35,10 +35,10 @@ export class Clients extends BaseEntity {
   @Column('varchar', { nullable: false, default: '', length: 7 })
   postcode: string;
 
-  @Column('varchar', { nullable: false, default: '', length: 11 })
+  @Column('varchar', { nullable: false, default: '', length: 12 })
   numNif: string;
 
-  @Column('varchar', { nullable: false, default: '', length: 11 })
+  @Column('varchar', { nullable: false, default: '', length: 12 })
   numCif: string;
 
   @Column('varchar', { nullable: false, default: '', length: 12 })
