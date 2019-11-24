@@ -26,7 +26,7 @@ export class Invoices extends BaseEntity {
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
   totalPrice: number;
 
-  @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
+  @Column('decimal', { nullable: false, precision: 10, scale: 3, default: 0 })
   re: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
