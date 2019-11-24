@@ -68,6 +68,21 @@ export class InvoicesController {
     await this.invoicesService.saveInvoice(invoiceData, userId);
   }
 
+  @Post('transform-sales-order/:salesOrderId')
+  @UsePipes(ValidationPipe)
+  async transformSalesOrder(
+    @Body() invoiceData: CreateInvoiceDto,
+    @Param('salesOrderId', ParseIntPipe) salesOrderId: number,
+    @Request() req: any,
+  ) {
+    const { userId } = req.user;
+    await this.invoicesService.transformToInvoice(
+      invoiceData,
+      userId,
+      salesOrderId,
+    );
+  }
+
   @Patch(':id')
   @UsePipes(ValidationPipe)
   async updateInvoice(

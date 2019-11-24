@@ -5,7 +5,7 @@ import {} from './salesOrder-products.dto';
 import { SalesOrderSettings } from './sales-order-settings.dto';
 import { SalesOrderProductsDto } from './salesOrder-products.dto';
 
-export class CreateInvoiceDto {
+export class CreateSalesOrderDto {
   @ValidateNested({ each: true })
   @Type(() => SalesOrderSettings)
   @ApiModelProperty({

@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsOptional, IsEnum, Max, Min } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { PaymentType } from '../../invoices/invoices.entity';
 
 export class SalesOrderSettings {
   @IsNotEmpty()
@@ -22,6 +23,11 @@ export class SalesOrderSettings {
   @IsOptional()
   @ApiModelProperty({ description: 'transport price' })
   transportPrice: number;
+
+  @IsNotEmpty()
+  @IsEnum(PaymentType)
+  @ApiModelProperty({ description: 'transport price' })
+  paymentType: PaymentType;
 
   @IsOptional()
   @Min(0)

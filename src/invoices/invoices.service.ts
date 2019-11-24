@@ -15,6 +15,7 @@ import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { InvoiceSettingsDto } from './dto/invoice-settings.dto';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
 import { FullInvoiceDetails } from './dto/output.dto';
+import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 
 @Injectable()
 export class InvoicesService {
@@ -27,6 +28,8 @@ export class InvoicesService {
     private productsRepository: ProductsRepository,
     @InjectRepository(InvoiceToProductsRepository)
     private invoiceToProductsRepository: InvoiceToProductsRepository,
+    @InjectRepository(SalesOrdersRepository)
+    private salesOrderRepository: SalesOrdersRepository,
   ) {}
 
   async paginateInvoices(options, userId): Promise<Pagination<Invoices>> {
@@ -150,5 +153,28 @@ export class InvoicesService {
       invoiceId,
       products,
     );
+  }
+
+  async transformToInvoice(
+    invoiceData: CreateInvoiceDto,
+    userId,
+    salesOrderId,
+  ) {
+    const salesOrder = await this.salesOrderRepository.findOne(salesOrderId);
+
+    if (!salesOrder) {
+      throw new NotFoundException(
+        'Not able to find the sales order you are trying to convert',
+      );
+    }
+    try {
+      await this.saveInvoice(invoiceData, userId);
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'There was a problem saving your invoice',
+      );
+    }
+    await this.salesOrderRepository.delete(salesOrderId);
+    return 'OK';
   }
 }

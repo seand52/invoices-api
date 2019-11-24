@@ -4,8 +4,9 @@ import { ClientsRepository } from '../clients/clients.repository';
 import { InvoicesRepository } from './invoices.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PaymentType } from './invoices.entity';
+import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 
 const mockClientsRepository = () => ({
   findOne: jest.fn(),
@@ -20,12 +21,52 @@ const mockProductsRepository = () => ({
   retrieveProductDetails: jest.fn(),
 });
 
+const mockSalesOrdersRepository = () => ({
+  findOne: jest.fn(),
+  delete: jest.fn(),
+});
+
+const creteInvoiceData = {
+  products: [
+    {
+      id: 1,
+      quantity: 3,
+    },
+    {
+      id: 2,
+      quantity: 4,
+    },
+    {
+      id: 7,
+      quantity: 2,
+    },
+    {
+      id: 4,
+      quantity: 5,
+    },
+    {
+      id: 5,
+      quantity: 9,
+    },
+  ],
+
+  settings: {
+    clientId: 2,
+    date: '12/12/2019',
+    re: 5.2,
+    transportPrice: 12.15,
+    paymentType: PaymentType.CASH,
+    tax: 0.21,
+  },
+};
+
 const mockInvoiceToProductsRepository = () => ({});
 describe('InvoicesService', () => {
   let invoiceService: InvoicesService;
   let clientsRepository;
   let invoicesRepository;
   let productsRepository;
+  let salesOrderRepository;
   const invoiceResult = {
     id: 1,
     totalPrice: '29.99',
@@ -81,6 +122,10 @@ describe('InvoicesService', () => {
           provide: InvoiceToProductsRepository,
           useFactory: mockInvoiceToProductsRepository,
         },
+        {
+          provide: SalesOrdersRepository,
+          useFactory: mockSalesOrdersRepository,
+        },
       ],
     }).compile();
 
@@ -91,6 +136,9 @@ describe('InvoicesService', () => {
     );
     productsRepository = await module.get<ProductsRepository>(
       ProductsRepository,
+    );
+    salesOrderRepository = await module.get<SalesOrdersRepository>(
+      SalesOrdersRepository,
     );
   });
 
@@ -214,6 +262,30 @@ describe('InvoicesService', () => {
         settings,
       );
       expect(result).toEqual(350.79);
+    });
+  });
+
+  describe('transform invoice from albaran', () => {
+    it('should correctly save the invoice', async () => {
+      const salesOrderId = 5;
+      salesOrderRepository.findOne.mockResolvedValue(true);
+      const spy = jest.spyOn(invoiceService, 'saveInvoice');
+      spy.mockResolvedValue('OK');
+      salesOrderRepository.findOne.mockResolvedValue(true);
+      invoicesRepository.delete.mockResolvedValue(true);
+      const result = await invoiceService.transformToInvoice(
+        creteInvoiceData,
+        1,
+        salesOrderId,
+      );
+      expect(salesOrderRepository.delete).toHaveBeenCalledWith(salesOrderId);
+      expect(result).toEqual('OK');
+    });
+    it('should throw an error with not found sales order id', async () => {
+      salesOrderRepository.findOne.mockResolvedValue(null);
+      await expect(
+        invoiceService.transformToInvoice(creteInvoiceData, 1, 5),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });
