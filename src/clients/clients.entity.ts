@@ -11,6 +11,7 @@ import {
 import { IsEmail } from 'class-validator';
 import { Users } from '../users/users.entity';
 import { Invoices } from '../invoices/invoices.entity';
+import { SalesOrders } from '../sales-orders/sales-orders.entity';
 
 @Entity()
 export class Clients extends BaseEntity {
@@ -53,6 +54,9 @@ export class Clients extends BaseEntity {
 
   @OneToMany(type => Invoices, invoices => invoices.client)
   invoices: Invoices[];
+
+  @OneToMany(type => SalesOrders, salesOrders => salesOrders.client)
+  salesOrders: SalesOrders[];
 
   @Column('int', { nullable: false })
   userId: number;

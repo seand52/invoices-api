@@ -1,15 +1,14 @@
 import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Invoices } from '../invoices/invoices.entity';
 import { Products } from '../products/products.entity';
 import { SalesOrders } from '../sales-orders/sales-orders.entity';
 
 @Entity()
-export class InvoiceToProducts {
+export class SalesOrderToProducts {
   @PrimaryGeneratedColumn()
   public id!: number;
 
   @Column('int', { nullable: false })
-  public invoiceId!: number;
+  public salesOrderId!: number;
 
   @Column('int', { nullable: false })
   public productId!: number;
@@ -17,12 +16,16 @@ export class InvoiceToProducts {
   @Column('int', { nullable: false })
   public quantity!: number;
 
-  @ManyToOne(type => Invoices, invoice => invoice.invoiceToProducts, {
-    onDelete: 'CASCADE',
-  })
-  public invoice!: Invoices;
+  @ManyToOne(
+    type => SalesOrders,
+    salesOrder => salesOrder.salesOrderToProducts,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
+  public salesOrder!: SalesOrders;
 
-  @ManyToOne(type => Products, product => product.invoiceToProducts, {
+  @ManyToOne(type => Products, product => product.salesOrderToProducts, {
     onDelete: 'CASCADE',
   })
   public product!: Products;

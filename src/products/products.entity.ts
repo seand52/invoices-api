@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Users } from '../users/users.entity';
 import { InvoiceToProducts } from '../invoice-products/invoice-products.entity';
+import { SalesOrderToProducts } from '../salesOrder-products/salesOrder-products.entity';
 
 @Entity()
 export class Products extends BaseEntity {
@@ -42,4 +43,10 @@ export class Products extends BaseEntity {
     invoiceToProducts => invoiceToProducts.product,
   )
   public invoiceToProducts!: InvoiceToProducts[];
+
+  @OneToMany(
+    type => SalesOrderToProducts,
+    salesOrderToProducts => salesOrderToProducts.product,
+  )
+  public salesOrderToProducts!: SalesOrderToProducts[];
 }

@@ -8,6 +8,7 @@ import { BusinessInfoModule } from './business-info/business-info.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { SalesOrdersModule } from './sales-orders/sales-orders.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ConfigService } from './config/config.service';
     ProductsModule,
     BusinessInfoModule,
     InvoicesModule,
+    SalesOrdersModule,
   ],
 })
 export class AppModule {}
