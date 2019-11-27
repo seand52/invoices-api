@@ -16,11 +16,10 @@ export class UsersService {
   async create(data: UserDto) {
     const salt = await bycript.genSalt();
     const password = await this.hashPassword(data.password, salt);
-    await this.userRepository.signUp(
+    return this.userRepository.signUp(
       { username: data.username, password },
       salt,
     );
-    return 'success';
   }
 
   private hashPassword(password: string, salt: string): string {
