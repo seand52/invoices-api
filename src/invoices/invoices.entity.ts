@@ -30,6 +30,9 @@ export class Invoices extends BaseEntity {
   re: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
+  tax: number;
+
+  @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
   transportPrice: number;
 
   @Column('enum', {
