@@ -36,7 +36,7 @@ export class ClientsService {
     const queryBuilder = this.clientsRepository.createQueryBuilder('client');
     queryBuilder
       .where('client.userId = :userId', { userId })
-      .orderBy('client.name', 'DESC');
+      .orderBy('client.name', 'ASC');
     return paginate<Clients>(queryBuilder, options);
   }
 

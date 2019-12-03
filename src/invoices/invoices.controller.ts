@@ -33,13 +33,14 @@ export class InvoicesController {
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
     @Request() req: any,
-  ): Promise<Pagination<Invoices>> {
+  ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
-    return await this.invoicesService.paginateInvoices(
+    const invoices = await this.invoicesService.paginateInvoices(
       { page, limit, route: 'http://localhost:3000/api/invoices' },
       userId,
     );
+    return { ...invoices, currentPage: Number(page) };
   }
 
   @Get(':id')

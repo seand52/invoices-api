@@ -14,7 +14,7 @@ async function bootstrap() {
     .addBearerAuth('Authorization', 'header', 'bearer')
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('test', app, document);
+  SwaggerModule.setup('docs', app, document);
   await app.listen(3000);
 }
 bootstrap();

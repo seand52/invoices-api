@@ -33,10 +33,11 @@ export class ClientsController {
   ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
-    return await this.clientsService.paginateClients(
+    const clients = await this.clientsService.paginateClients(
       { page, limit, route: 'http://localhost:3000/api/clients' },
       userId,
     );
+    return { ...clients, currentPage: Number(page) };
   }
 
   @Get(':id')

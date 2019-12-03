@@ -30,13 +30,14 @@ export class ProductsController {
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
     @Request() req: any,
-  ): Promise<Pagination<Products>> {
+  ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
-    return await this.productsService.paginateProducts(
+    const products = await this.productsService.paginateProducts(
       { page, limit, route: 'http://localhost:3000/api/products' },
       userId,
     );
+    return { ...products, currentPage: Number(page) };
   }
 
   @Get(':id')
