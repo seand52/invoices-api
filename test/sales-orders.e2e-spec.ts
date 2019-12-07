@@ -132,7 +132,7 @@ describe('AppController (e2e)', () => {
         expect(res.body.clientId).toEqual(client.id);
         expect(res.body.totalPrice).toEqual(invoicesData.totalPrice);
         expect(res.body.re).toEqual(invoicesData.re);
-        expect(res.body.tax).toEqual('0.00');
+        expect(res.body.tax).toEqual(0.0);
         expect(res.body.userId).toEqual(user.id);
       });
   });
