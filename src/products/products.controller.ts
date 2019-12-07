@@ -32,7 +32,7 @@ export class ProductsController {
     @Request() req: any,
   ) {
     const { userId } = req.user;
-    limit = limit > 100 ? 100 : limit;
+    limit = limit > 1000 ? 1000 : limit;
     const products = await this.productsService.paginateProducts(
       { page, limit, route: 'http://localhost:3000/api/products' },
       userId,

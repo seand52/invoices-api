@@ -33,13 +33,14 @@ export class SalesOrdersController {
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
     @Request() req: any,
-  ): Promise<Pagination<SalesOrders>> {
+  ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
-    return await this.salesOrdersService.paginatesalesOrders(
+    const salesOrders = await this.salesOrdersService.paginatesalesOrders(
       { page, limit, route: 'http://localhost:3000/api/sales-orders' },
       userId,
     );
+    return { ...salesOrders, currentPage: Number(page) };
   }
 
   @Get(':id')

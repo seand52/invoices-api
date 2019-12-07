@@ -49,6 +49,7 @@ export class InvoicesRepository extends Repository<Invoices> {
     return invoices.map(item => ({
       ...item,
       re: parseFloat(item.re),
+      tax: parseFloat(item.tax),
       transportPrice: parseFloat(item.transportPrice),
       totalPrice: parseFloat(item.totalPrice),
     }));
