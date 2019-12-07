@@ -8,6 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoicesRepository } from './invoices.repository';
 import { Pagination, paginate } from 'nestjs-typeorm-paginate';
+import { generatePdf } from '../helpers/generate_pdf';
 import { Invoices } from './invoices.entity';
 import { ClientsRepository } from '../clients/clients.repository';
 import { ProductsRepository } from '../products/products.repository';
@@ -16,6 +17,8 @@ import { InvoiceSettingsDto } from './dto/invoice-settings.dto';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
 import { FullInvoiceDetails } from './dto/output.dto';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
+import { BusinessInfoRepository } from '../business-info/business-info.repository';
+import { generateInvoiceTemplate } from '../helpers/invoice-template';
 
 @Injectable()
 export class InvoicesService {
@@ -30,6 +33,8 @@ export class InvoicesService {
     private invoiceToProductsRepository: InvoiceToProductsRepository,
     @InjectRepository(SalesOrdersRepository)
     private salesOrderRepository: SalesOrdersRepository,
+    @InjectRepository(BusinessInfoRepository)
+    private businessInfoRepository: BusinessInfoRepository,
   ) {}
 
   async paginateInvoices(options, userId): Promise<Pagination<Invoices>> {
@@ -76,17 +81,25 @@ export class InvoicesService {
       const totalWithoutTransport = subTotal + iva + re;
       const transport = settings.transportPrice || 0;
       const invoiceTotal = totalWithoutTransport + transport;
-      return Math.round(invoiceTotal * 100) / 100;
+      return {
+        productsTotal: this.round(subTotal),
+        tax: this.round(iva),
+        re: this.round(re),
+        subTotal: this.round(totalWithoutTransport),
+        transport: this.round(transport),
+        invoiceTotal: this.round(invoiceTotal),
+      };
     } catch (err) {
       throw new InternalServerErrorException('Error calculating the price');
     }
   }
 
-  async retrieveRelevantData(invoiceData, clientId) {
+  async retrieveRelevantData(invoiceData, clientId, userId) {
     const productIds = invoiceData.products.map(item => item.id);
-    const [client, products] = await Promise.all([
+    const [client, products, businessInfo] = await Promise.all([
       this.clientsRepository.findOne(clientId),
       this.productsRepository.retrieveProductDetails(productIds),
+      this.businessInfoRepository.findOne({ userId }),
     ]);
     const fullProductData = products.map(product => ({
       ...product,
@@ -96,21 +109,21 @@ export class InvoicesService {
     return {
       products: fullProductData,
       client,
+      businessInfo,
     };
   }
 
   async saveInvoice(invoiceData: CreateInvoiceDto, userId) {
     const { clientId } = invoiceData.settings;
-    const { client, products } = await this.retrieveRelevantData(
+    const { client, products, businessInfo } = await this.retrieveRelevantData(
       invoiceData,
       clientId,
+      userId,
     );
-
-    const totalPrice = this.calculateTotalprice(products, invoiceData.settings);
-
+    const totals = this.calculateTotalprice(products, invoiceData.settings);
     const result = await this.invoicesRepository.createInvoice({
       ...invoiceData.settings,
-      totalPrice,
+      totalPrice: totals.invoiceTotal,
       userId,
     });
 
@@ -118,7 +131,17 @@ export class InvoicesService {
       result.identifiers[0].id,
       products,
     );
-    return 'OK';
+
+    return {
+      client,
+      products,
+      businessInfo,
+      totals,
+      invoiceData: {
+        date: invoiceData.settings.date,
+        id: result.identifiers[0].id,
+      },
+    };
   }
 
   async updateInvoice(invoiceData: CreateInvoiceDto, invoiceId, userId) {
@@ -134,16 +157,17 @@ export class InvoicesService {
         'You do not have permission to modify this invoice',
       );
     }
-    const { client, products } = await this.retrieveRelevantData(
+    const { client, products, businessInfo } = await this.retrieveRelevantData(
       invoiceData,
       clientId,
+      userId,
     );
-    const totalPrice = this.calculateTotalprice(products, invoiceData.settings);
+    const totals = this.calculateTotalprice(products, invoiceData.settings);
 
     await this.invoicesRepository.updateInvoice(
       {
         ...invoiceData.settings,
-        totalPrice,
+        totalPrice: totals.invoiceTotal,
         userId,
       },
       invoiceId,
@@ -153,6 +177,16 @@ export class InvoicesService {
       invoiceId,
       products,
     );
+    return {
+      client,
+      products,
+      businessInfo,
+      totals,
+      invoiceData: {
+        date: invoiceData.settings.date,
+        id: invoiceId,
+      },
+    };
   }
 
   async transformToInvoice(
@@ -176,5 +210,16 @@ export class InvoicesService {
     }
     await this.salesOrderRepository.delete(salesOrderId);
     return 'OK';
+  }
+
+  generatePdf(data, res) {
+    const docDefinition = generateInvoiceTemplate(data);
+    return generatePdf(docDefinition, response => {
+      res.send(response);
+    });
+  }
+
+  round(num: number) {
+    return Math.round(num * 100) / 100;
   }
 }

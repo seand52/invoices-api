@@ -6,6 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
   Request,
+  Response,
   Get,
   Param,
   ParseIntPipe,
@@ -64,9 +65,15 @@ export class InvoicesController {
   async createInvoice(
     @Body() invoiceData: CreateInvoiceDto,
     @Request() req: any,
+    @Response() res: any,
   ) {
     const { userId } = req.user;
-    await this.invoicesService.saveInvoice(invoiceData, userId);
+    const response = await this.invoicesService.saveInvoice(
+      invoiceData,
+      userId,
+    );
+    console.log(response);
+    return this.invoicesService.generatePdf(response, res);
   }
 
   @Post('transform-sales-order/:salesOrderId')
@@ -90,8 +97,14 @@ export class InvoicesController {
     @Param('id', ParseIntPipe) invoiceId: number,
     @Body() invoiceData: CreateInvoiceDto,
     @Request() req: any,
+    @Response() res: any,
   ) {
     const { userId } = req.user;
-    await this.invoicesService.updateInvoice(invoiceData, invoiceId, userId);
+    const response = await this.invoicesService.updateInvoice(
+      invoiceData,
+      invoiceId,
+      userId,
+    );
+    return this.invoicesService.generatePdf(response, res);
   }
 }

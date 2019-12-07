@@ -73,18 +73,23 @@ export class SalesOrdersService {
 
   async saveSalesOrder(salesOrderData: CreateSalesOrderDto, userId) {
     const { clientId } = salesOrderData.settings;
-    const { client, products } = await this.invoiceService.retrieveRelevantData(
+    const {
+      client,
+      products,
+      businessInfo,
+    } = await this.invoiceService.retrieveRelevantData(
       salesOrderData,
       clientId,
+      userId,
     );
 
-    const totalPrice = this.invoiceService.calculateTotalprice(
+    const totals = this.invoiceService.calculateTotalprice(
       products,
       salesOrderData.settings,
     );
     const result = await this.salesOrdersRepository.createSalesOrder({
       ...salesOrderData.settings,
-      totalPrice,
+      totalPrice: totals.invoiceTotal,
       userId,
     });
 
@@ -108,11 +113,16 @@ export class SalesOrdersService {
         'You do not have permission to modify this invoice',
       );
     }
-    const { client, products } = await this.invoiceService.retrieveRelevantData(
+    const {
+      client,
+      products,
+      businessInfo,
+    } = await this.invoiceService.retrieveRelevantData(
       invoiceData,
       clientId,
+      userId,
     );
-    const totalPrice = this.invoiceService.calculateTotalprice(
+    const totals = this.invoiceService.calculateTotalprice(
       products,
       invoiceData.settings,
     );
@@ -120,7 +130,7 @@ export class SalesOrdersService {
     await this.salesOrdersRepository.updateSalesOrder(
       {
         ...invoiceData.settings,
-        totalPrice,
+        totalPrice: totals.invoiceTotal,
         userId,
       },
       invoiceId,
