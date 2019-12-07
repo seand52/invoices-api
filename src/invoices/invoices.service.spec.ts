@@ -7,6 +7,7 @@ import { InvoiceToProductsRepository } from '../invoice-products/invoice-product
 import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PaymentType } from './invoices.entity';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
+import { BusinessInfoRepository } from '../business-info/business-info.repository';
 
 const mockClientsRepository = () => ({
   findOne: jest.fn(),
@@ -24,6 +25,10 @@ const mockProductsRepository = () => ({
 const mockSalesOrdersRepository = () => ({
   findOne: jest.fn(),
   delete: jest.fn(),
+});
+
+const mockBusinessInfoRepository = () => ({
+  findOne: jest.fn(),
 });
 
 const creteInvoiceData = {
@@ -67,6 +72,7 @@ describe('InvoicesService', () => {
   let invoicesRepository;
   let productsRepository;
   let salesOrderRepository;
+  let businessInfoRepository;
   const invoiceResult = {
     id: 1,
     totalPrice: '29.99',
@@ -126,6 +132,10 @@ describe('InvoicesService', () => {
           provide: SalesOrdersRepository,
           useFactory: mockSalesOrdersRepository,
         },
+        {
+          provide: BusinessInfoRepository,
+          useFactory: mockBusinessInfoRepository,
+        },
       ],
     }).compile();
 
@@ -139,6 +149,9 @@ describe('InvoicesService', () => {
     );
     salesOrderRepository = await module.get<SalesOrdersRepository>(
       SalesOrdersRepository,
+    );
+    businessInfoRepository = await module.get<BusinessInfoRepository>(
+      BusinessInfoRepository,
     );
   });
 
@@ -218,9 +231,11 @@ describe('InvoicesService', () => {
           updatedAt: '2019-11-18T16:38:59.073Z',
         },
       ]);
+      businessInfoRepository.findOne.mockResolvedValue(true);
       const result = await invoiceService.retrieveRelevantData(
         invoiceData,
         clientId,
+        14,
       );
       expect(result).toEqual({
         client: {
@@ -228,6 +243,7 @@ describe('InvoicesService', () => {
           name: 'pepito',
         },
         products: formattedProducts,
+        businessInfo: true,
       });
     });
   });
@@ -246,7 +262,7 @@ describe('InvoicesService', () => {
         formattedProducts,
         settings,
       );
-      expect(result).toEqual(375.87);
+      expect(result.invoiceTotal).toEqual(375.87);
     });
     it('should correctly calculate the price when only tax selected', () => {
       const settings = {
@@ -261,7 +277,7 @@ describe('InvoicesService', () => {
         formattedProducts,
         settings,
       );
-      expect(result).toEqual(350.79);
+      expect(result.invoiceTotal).toEqual(350.79);
     });
   });
 
@@ -269,8 +285,8 @@ describe('InvoicesService', () => {
     it('should correctly save the invoice', async () => {
       const salesOrderId = 5;
       salesOrderRepository.findOne.mockResolvedValue(true);
-      const spy = jest.spyOn(invoiceService, 'saveInvoice');
-      spy.mockResolvedValue('OK');
+      const spy: any = jest.spyOn(invoiceService, 'saveInvoice');
+      spy.mockResolvedValue(true);
       salesOrderRepository.findOne.mockResolvedValue(true);
       invoicesRepository.delete.mockResolvedValue(true);
       const result = await invoiceService.transformToInvoice(

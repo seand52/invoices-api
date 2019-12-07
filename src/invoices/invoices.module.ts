@@ -7,6 +7,7 @@ import { ClientsRepository } from '../clients/clients.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
+import { BusinessInfoRepository } from '../business-info/business-info.repository';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
     TypeOrmModule.forFeature([ProductsRepository]),
     TypeOrmModule.forFeature([InvoiceToProductsRepository]),
     TypeOrmModule.forFeature([SalesOrdersRepository]),
+    TypeOrmModule.forFeature([BusinessInfoRepository]),
   ],
   controllers: [InvoicesController],
   providers: [InvoicesService],
