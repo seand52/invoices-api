@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,6 +31,13 @@ export class ClientsService {
       throw new NotFoundException(`Client with ID ${id} not found`);
     }
     return client;
+  }
+
+  async searchClients(name: string): Promise<Clients[]> {
+    if (!name.trim().length) {
+      throw new BadRequestException();
+    }
+    return this.clientsRepository.searchClientsByName(name);
   }
 
   async paginateClients(options, userId): Promise<Pagination<Clients>> {

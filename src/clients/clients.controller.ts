@@ -40,6 +40,11 @@ export class ClientsController {
     return { ...clients, currentPage: Number(page) };
   }
 
+  @Get('search')
+  async searchClient(@Query('name') name: string = ''): Promise<Clients[]> {
+    return this.clientsService.searchClients(name);
+  }
+
   @Get(':id')
   async getClient(@Param('id', ParseIntPipe) id: number): Promise<Clients> {
     return this.clientsService.getClientById(id);
