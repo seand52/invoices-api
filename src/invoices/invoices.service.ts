@@ -113,6 +113,7 @@ export class InvoicesService {
       );
       return {
         ...product,
+        price: parseFloat(invoiceProduct.price),
         quantity: invoiceProduct.quantity,
         discount: this.makeZero(invoiceProduct.discount),
         finalPrice: this.round(

@@ -208,6 +208,8 @@ describe('AppController (e2e)', () => {
       products: _mockProducts.map(item => ({
         id: item.id,
         quantity: 3,
+        discount: 0,
+        price: 20,
       })),
     };
 
@@ -280,6 +282,8 @@ describe('AppController (e2e)', () => {
       products: _mockProducts.map(item => ({
         id: item.id,
         quantity: 3,
+        discount: 0,
+        price: 20,
       })),
     };
 
@@ -341,6 +345,8 @@ describe('AppController (e2e)', () => {
       products: _mockProducts.map(item => ({
         id: item.id,
         quantity: 3,
+        discount: 0,
+        price: 20,
       })),
     };
 

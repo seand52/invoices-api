@@ -20,6 +20,9 @@ export class InvoiceToProducts {
   @Column('decimal', { nullable: false, precision: 10, scale: 3, default: 0 })
   public discount: number;
 
+  @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
+  public price: number;
+
   @ManyToOne(type => Invoices, invoice => invoice.invoiceToProducts, {
     onDelete: 'CASCADE',
   })

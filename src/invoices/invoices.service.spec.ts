@@ -97,7 +97,7 @@ describe('InvoicesService', () => {
     {
       id: 1,
       description: 'test2',
-      price: 29.99,
+      price: 10,
       userId: 14,
       createdAt: '2019-11-18T16:38:59.073Z',
       updatedAt: '2019-11-18T16:38:59.073Z',
@@ -108,7 +108,7 @@ describe('InvoicesService', () => {
     {
       id: 2,
       description: 'test2',
-      price: 39.99,
+      price: 10,
       userId: 14,
       createdAt: '2019-11-18T16:38:59.073Z',
       updatedAt: '2019-11-18T16:38:59.073Z',
@@ -119,7 +119,7 @@ describe('InvoicesService', () => {
     {
       id: 3,
       description: 'test2',
-      price: 19.99,
+      price: 10,
       userId: 14,
       createdAt: '2019-11-18T16:38:59.073Z',
       updatedAt: '2019-11-18T16:38:59.073Z',
@@ -191,16 +191,19 @@ describe('InvoicesService', () => {
           id: 1,
           quantity: 3,
           discount: 0,
+          price: 10,
         },
         {
           id: 2,
           quantity: 4,
           discount: 0,
+          price: 10,
         },
         {
           id: 3,
           quantity: 2,
           discount: 0,
+          price: 10,
         },
       ],
 
@@ -276,7 +279,7 @@ describe('InvoicesService', () => {
         formattedProducts,
         settings,
       );
-      expect(result.invoiceTotal).toEqual(375.87);
+      expect(result.invoiceTotal).toEqual(123.58);
     });
     it('should correctly calculate the price when only tax selected', () => {
       const settings = {
@@ -291,7 +294,7 @@ describe('InvoicesService', () => {
         formattedProducts,
         settings,
       );
-      expect(result.invoiceTotal).toEqual(350.79);
+      expect(result.invoiceTotal).toEqual(108.9);
     });
   });
 
