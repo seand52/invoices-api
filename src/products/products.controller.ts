@@ -29,12 +29,13 @@ export class ProductsController {
   async getProducts(
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
+    @Query('name') name: string = '',
     @Request() req: any,
   ) {
     const { userId } = req.user;
     limit = limit > 1000 ? 1000 : limit;
     const products = await this.productsService.paginateProducts(
-      { page, limit, route: 'http://localhost:3000/api/products' },
+      { page, limit, name, route: 'http://localhost:3000/api/products' },
       userId,
     );
     return { ...products, currentPage: Number(page) };

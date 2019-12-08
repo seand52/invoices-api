@@ -43,8 +43,13 @@ export class SalesOrdersService {
         'client.email',
         'client.telephone1',
       ])
-      .where('sales_order.userId = :userId', { userId })
-      .getMany();
+      .where('sales_order.userId = :userId', { userId });
+
+    if (options.clientName !== '') {
+      queryBuilder.where('client.name like :name', {
+        name: '%' + options.clientName + '%',
+      });
+    }
     return paginate<SalesOrders>(queryBuilder, options);
   }
 

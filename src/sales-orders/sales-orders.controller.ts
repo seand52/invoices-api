@@ -37,12 +37,18 @@ export class SalesOrdersController {
   async getSalesOrders(
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
+    @Query('clientName') clientName: string = '',
     @Request() req: any,
   ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
     const salesOrders = await this.salesOrdersService.paginatesalesOrders(
-      { page, limit, route: 'http://localhost:3000/api/sales-orders' },
+      {
+        page,
+        limit,
+        clientName,
+        route: 'http://localhost:3000/api/sales-orders',
+      },
       userId,
     );
     return { ...salesOrders, currentPage: Number(page) };
@@ -76,7 +82,6 @@ export class SalesOrdersController {
       salesOrderData,
       userId,
     );
-    debugger;
     return this.salesOrdersService.generatePdf(response, res);
   }
 

@@ -31,6 +31,11 @@ export class ProductsService {
   async paginateProducts(options, userId): Promise<Pagination<Products>> {
     const queryBuilder = this.productsRepository.createQueryBuilder('product');
     queryBuilder.where('product.userId = :userId', { userId });
+    if (options.name !== '') {
+      queryBuilder.where('product.description like :name', {
+        name: '%' + options.name + '%',
+      });
+    }
     return paginate<Products>(queryBuilder, options);
   }
 

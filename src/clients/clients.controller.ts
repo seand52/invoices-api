@@ -29,12 +29,13 @@ export class ClientsController {
   async getClients(
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
+    @Query('name') name: string = '',
     @Request() req: any,
   ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
     const clients = await this.clientsService.paginateClients(
-      { page, limit, route: 'http://localhost:3000/api/clients' },
+      { page, limit, name, route: 'http://localhost:3000/api/clients' },
       userId,
     );
     return { ...clients, currentPage: Number(page) };

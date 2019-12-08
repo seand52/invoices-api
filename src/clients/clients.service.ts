@@ -45,6 +45,13 @@ export class ClientsService {
     queryBuilder
       .where('client.userId = :userId', { userId })
       .orderBy('client.name', 'ASC');
+
+    if (options.name !== '') {
+      queryBuilder.where('client.name like :name', {
+        name: '%' + options.name + '%',
+      });
+    }
+
     return paginate<Clients>(queryBuilder, options);
   }
 

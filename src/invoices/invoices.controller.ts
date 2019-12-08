@@ -1,27 +1,25 @@
 import {
-  Controller,
-  Post,
   Body,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-  Request,
-  Response,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
-  Query,
-  Delete,
   Patch,
+  Post,
+  Query,
+  Request,
+  Response,
+  UseGuards,
   UseInterceptors,
-  ClassSerializerInterceptor,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { InvoicesService } from './invoices.service';
 import { AuthGuard } from '@nestjs/passport';
-import { Invoices } from './invoices.entity';
-import { Pagination } from 'nestjs-typeorm-paginate';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { FullInvoiceDetails } from './dto/output.dto';
+import { InvoicesService } from './invoices.service';
 
 @Controller('invoices')
 @UseGuards(AuthGuard('jwt'))
@@ -33,12 +31,13 @@ export class InvoicesController {
   async getInvoices(
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
+    @Query('clientName') clientName: string = '',
     @Request() req: any,
   ) {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
     const invoices = await this.invoicesService.paginateInvoices(
-      { page, limit, route: 'http://localhost:3000/api/invoices' },
+      { page, limit, clientName, route: 'http://localhost:3000/api/invoices' },
       userId,
     );
     return { ...invoices, currentPage: Number(page) };
@@ -72,7 +71,6 @@ export class InvoicesController {
       invoiceData,
       userId,
     );
-    console.log(response);
     return this.invoicesService.generatePdf(response, res);
   }
 

@@ -42,8 +42,12 @@ export class InvoicesService {
     queryBuilder
       .leftJoin('invoice.client', 'client')
       .select(['invoice', 'client.name', 'client.email', 'client.telephone1'])
-      .where('invoice.userId = :userId', { userId })
-      .getMany();
+      .where('invoice.userId = :userId', { userId });
+    if (options.clientName !== '') {
+      queryBuilder.where('client.name like :name', {
+        name: '%' + options.clientName + '%',
+      });
+    }
     return paginate<Invoices>(queryBuilder, options);
   }
 
