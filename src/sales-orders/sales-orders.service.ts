@@ -1,21 +1,21 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InvoicesRepository } from '../invoices/invoices.repository';
+import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { ClientsRepository } from '../clients/clients.repository';
+import { generatePdf } from '../helpers/generate_pdf';
+import { generateSalesOrderTemplate } from '../helpers/sales_order_template';
+import { InvoicesService } from '../invoices/invoices.service';
 import { ProductsRepository } from '../products/products.repository';
-import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
-import { Pagination, paginate } from 'nestjs-typeorm-paginate';
+import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
+import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
+import { FullSalesOrdersDetails } from './dto/output.dto';
 import { SalesOrders } from './sales-orders.entity';
 import { SalesOrdersRepository } from './sales-orders.repository';
-import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
-import { FullSalesOrdersDetails } from './dto/output.dto';
-import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
-import { InvoicesService } from '../invoices/invoices.service';
 
 @Injectable()
 export class SalesOrdersService {
@@ -72,6 +72,7 @@ export class SalesOrdersService {
   }
 
   async saveSalesOrder(salesOrderData: CreateSalesOrderDto, userId) {
+    debugger;
     const { clientId } = salesOrderData.settings;
     const {
       client,
@@ -97,7 +98,16 @@ export class SalesOrdersService {
       result.identifiers[0].id,
       products,
     );
-    return 'OK';
+    return {
+      client,
+      products,
+      businessInfo,
+      totals,
+      invoiceData: {
+        id: result.identifiers[0].id,
+        date: salesOrderData.settings.date,
+      },
+    };
   }
 
   async updateSalesOrder(invoiceData: CreateSalesOrderDto, invoiceId, userId) {
@@ -140,5 +150,24 @@ export class SalesOrdersService {
       invoiceId,
       products,
     );
+
+    return {
+      client,
+      products,
+      businessInfo,
+      totals,
+      invoiceData: {
+        id: invoiceId,
+        date: invoiceData.settings.date,
+      },
+    };
+  }
+  generatePdf(data, res) {
+    const docDefinition = generateSalesOrderTemplate(data);
+    debugger;
+    return generatePdf(docDefinition, response => {
+      debugger;
+      res.send(response);
+    });
   }
 }

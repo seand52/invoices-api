@@ -6,6 +6,7 @@ import {
   UsePipes,
   ValidationPipe,
   Request,
+  Response,
   Get,
   Param,
   ParseIntPipe,
@@ -21,12 +22,16 @@ import { SalesOrders } from './sales-orders.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { FullSalesOrdersDetails } from './dto/output.dto';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
+import { InvoicesService } from '../invoices/invoices.service';
 
 @Controller('sales-orders')
 @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(ClassSerializerInterceptor)
 export class SalesOrdersController {
-  constructor(private salesOrdersService: SalesOrdersService) {}
+  constructor(
+    private salesOrdersService: SalesOrdersService,
+    private invoiceService: InvoicesService,
+  ) {}
 
   @Get()
   async getSalesOrders(
@@ -64,9 +69,15 @@ export class SalesOrdersController {
   async createInvoice(
     @Body() salesOrderData: CreateSalesOrderDto,
     @Request() req: any,
+    @Response() res: any,
   ) {
     const { userId } = req.user;
-    await this.salesOrdersService.saveSalesOrder(salesOrderData, userId);
+    const response = await this.salesOrdersService.saveSalesOrder(
+      salesOrderData,
+      userId,
+    );
+    debugger;
+    return this.salesOrdersService.generatePdf(response, res);
   }
 
   @Patch(':id')
@@ -75,12 +86,14 @@ export class SalesOrdersController {
     @Param('id', ParseIntPipe) invoiceId: number,
     @Body() invoiceData: CreateSalesOrderDto,
     @Request() req: any,
+    @Response() res: any,
   ) {
     const { userId } = req.user;
-    await this.salesOrdersService.updateSalesOrder(
+    const response = await this.salesOrdersService.updateSalesOrder(
       invoiceData,
       invoiceId,
       userId,
     );
+    return this.invoiceService.generatePdf(response, res);
   }
 }

@@ -17,16 +17,16 @@ import { PaymentType } from '../src/invoices/invoices.entity';
 import { InvoiceToProductsRepository } from '../src/invoice-products/invoice-products.repository';
 import { SalesOrdersRepository } from '../src/sales-orders/sales-orders.repository';
 import { SalesOrdersToProductsRepository } from '../src/salesOrder-products/salesOrder-products.repository';
+import { BusinessInfoRepository } from '../src/business-info/business-info.repository';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let userRepository: UserRespository;
   let productsRepository: ProductsRepository;
-  let invoicesRepository: InvoicesRepository;
   let clientsRepository: ClientsRepository;
-  let invoiceProducts: InvoiceToProductsRepository;
   let salesOrdersRepository: SalesOrdersRepository;
   let salesOrdersProductsRepository: SalesOrdersToProductsRepository;
+  let businessInfoRepository: BusinessInfoRepository;
 
   let user: Users;
   let jwt: string;
@@ -37,22 +37,20 @@ describe('AppController (e2e)', () => {
     app = module.createNestApplication();
     await app.init();
     userRepository = await module.get<UserRespository>(UserRespository);
-    invoicesRepository = await module.get<InvoicesRepository>(
-      InvoicesRepository,
-    );
     productsRepository = await module.get<ProductsRepository>(
       ProductsRepository,
     );
     clientsRepository = await module.get<ClientsRepository>(ClientsRepository);
-    invoiceProducts = await module.get<InvoiceToProductsRepository>(
-      InvoiceToProductsRepository,
-    );
     salesOrdersRepository = await module.get<SalesOrdersRepository>(
       SalesOrdersRepository,
     );
     salesOrdersProductsRepository = await module.get<
       SalesOrdersToProductsRepository
     >(SalesOrdersToProductsRepository);
+
+    businessInfoRepository = await module.get<BusinessInfoRepository>(
+      BusinessInfoRepository,
+    );
   });
 
   beforeEach(async () => {
@@ -178,6 +176,17 @@ describe('AppController (e2e)', () => {
       email: `client-${Math.random()}@gmail.com`,
       userId: user.id,
     });
+    await businessInfoRepository.save({
+      name: 'Company name',
+      cif: '47182818G',
+      address: 'calle test',
+      postcode: '08001',
+      city: 'Barcelona',
+      country: 'Spain',
+      telephone: '933281828',
+      email: `companyemail-${Math.random()}@gmail.com`,
+      userId: user.id,
+    });
     const _mockProducts = await productsRepository.save(
       mockProducts.map(item => ({
         ...item,
@@ -221,6 +230,17 @@ describe('AppController (e2e)', () => {
       telephone1: 'string',
       telephone2: 'string',
       email: `client-${Math.random()}@gmail.com`,
+      userId: user.id,
+    });
+    await businessInfoRepository.save({
+      name: 'Company name',
+      cif: '47182818G',
+      address: 'calle test',
+      postcode: '08001',
+      city: 'Barcelona',
+      country: 'Spain',
+      telephone: '933281828',
+      email: `companyemail-${Math.random()}@gmail.com`,
       userId: user.id,
     });
 
