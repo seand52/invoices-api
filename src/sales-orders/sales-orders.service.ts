@@ -77,7 +77,6 @@ export class SalesOrdersService {
   }
 
   async saveSalesOrder(salesOrderData: CreateSalesOrderDto, userId) {
-    debugger;
     const { clientId } = salesOrderData.settings;
     const {
       client,
@@ -169,9 +168,7 @@ export class SalesOrdersService {
   }
   generatePdf(data, res) {
     const docDefinition = generateSalesOrderTemplate(data);
-    debugger;
     return generatePdf(docDefinition, response => {
-      debugger;
       res.send(response);
     });
   }

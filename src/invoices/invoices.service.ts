@@ -77,7 +77,9 @@ export class InvoicesService {
   calculateTotalprice(products, settings: InvoiceSettingsDto) {
     try {
       const subTotal = products.reduce(
-        (accum, curr) => accum + curr.price * curr.quantity,
+        (accum, curr) =>
+          accum +
+          curr.price * curr.quantity * (1 - this.makeZero(curr.discount)),
         0,
       );
       const iva = subTotal * settings.tax;
@@ -105,11 +107,21 @@ export class InvoicesService {
       this.productsRepository.retrieveProductDetails(productIds),
       this.businessInfoRepository.findOne({ userId }),
     ]);
-    const fullProductData = products.map(product => ({
-      ...product,
-      quantity: invoiceData.products.find(item => item.id === product.id)
-        .quantity,
-    }));
+    const fullProductData = products.map(product => {
+      const invoiceProduct = invoiceData.products.find(
+        item => item.id === product.id,
+      );
+      return {
+        ...product,
+        quantity: invoiceProduct.quantity,
+        discount: this.makeZero(invoiceProduct.discount),
+        finalPrice: this.round(
+          invoiceProduct.quantity *
+            product.price *
+            (1 - invoiceProduct.discount),
+        ),
+      };
+    });
     return {
       products: fullProductData,
       client,
@@ -225,5 +237,9 @@ export class InvoicesService {
 
   round(num: number) {
     return Math.round(num * 100) / 100;
+  }
+
+  makeZero(num: number) {
+    return isNaN(num) ? 0 : num;
   }
 }

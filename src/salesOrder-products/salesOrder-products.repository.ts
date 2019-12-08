@@ -28,6 +28,7 @@ export class SalesOrdersToProductsRepository extends Repository<
       salesOrderId,
       productId: product.id,
       quantity: product.quantity,
+      discount: product.discount,
     }));
   }
 }

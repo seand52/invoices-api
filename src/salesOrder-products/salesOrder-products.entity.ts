@@ -16,6 +16,9 @@ export class SalesOrderToProducts {
   @Column('int', { nullable: false })
   public quantity!: number;
 
+  @Column('decimal', { nullable: false, precision: 10, scale: 3, default: 0 })
+  public discount: number;
+
   @ManyToOne(
     type => SalesOrders,
     salesOrder => salesOrder.salesOrderToProducts,

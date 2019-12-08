@@ -36,22 +36,27 @@ const creteInvoiceData = {
     {
       id: 1,
       quantity: 3,
+      discount: 0,
     },
     {
       id: 2,
       quantity: 4,
+      discount: 0,
     },
     {
       id: 7,
       quantity: 2,
+      discount: 0,
     },
     {
       id: 4,
       quantity: 5,
+      discount: 0,
     },
     {
       id: 5,
       quantity: 9,
+      discount: 0,
     },
   ],
 
@@ -97,6 +102,8 @@ describe('InvoicesService', () => {
       createdAt: '2019-11-18T16:38:59.073Z',
       updatedAt: '2019-11-18T16:38:59.073Z',
       quantity: 3,
+      discount: 0,
+      finalPrice: 89.97,
     },
     {
       id: 2,
@@ -106,6 +113,8 @@ describe('InvoicesService', () => {
       createdAt: '2019-11-18T16:38:59.073Z',
       updatedAt: '2019-11-18T16:38:59.073Z',
       quantity: 4,
+      discount: 0,
+      finalPrice: 159.96,
     },
     {
       id: 3,
@@ -115,6 +124,8 @@ describe('InvoicesService', () => {
       createdAt: '2019-11-18T16:38:59.073Z',
       updatedAt: '2019-11-18T16:38:59.073Z',
       quantity: 2,
+      discount: 0,
+      finalPrice: 39.98,
     },
   ];
   beforeEach(async () => {
@@ -179,14 +190,17 @@ describe('InvoicesService', () => {
         {
           id: 1,
           quantity: 3,
+          discount: 0,
         },
         {
           id: 2,
           quantity: 4,
+          discount: 0,
         },
         {
           id: 3,
           quantity: 2,
+          discount: 0,
         },
       ],
 
@@ -196,7 +210,7 @@ describe('InvoicesService', () => {
         re: 5.2,
         transportPrice: 12.15,
         paymentType: 'Transferencia',
-        tax: true,
+        tax: 0.21,
       },
     };
     const clientId = 2;

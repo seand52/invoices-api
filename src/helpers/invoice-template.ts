@@ -13,6 +13,8 @@ interface Totals {
 
 interface InvoiceProducts extends Products {
   quantity: number;
+  discount: number;
+  finalPrice: number;
 }
 interface Data {
   products: InvoiceProducts[];
@@ -46,6 +48,11 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
       },
       {
         text: 'Precio Unidad',
+        style: ['itemsHeader', 'center'],
+        fontSize: 10,
+      },
+      {
+        text: '% Descuento',
         style: ['itemsHeader', 'center'],
         fontSize: 10,
       },
@@ -88,7 +95,14 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
         margin: [0, 5, 0, 0],
       },
       {
-        text: `${Math.round(product.quantity * product.price * 100) / 100}€`,
+        text: `${product.discount * 100}%`,
+        style: 'itemNumber',
+        fontSize: 9,
+        // @ts-ignore
+        margin: [0, 5, 0, 0],
+      },
+      {
+        text: `${product.finalPrice}€`,
         style: 'itemNumber',
         fontSize: 9,
         // @ts-ignore
@@ -172,7 +186,7 @@ export const generateInvoiceTemplate = (data: Data) => {
             style: 'invoiceBillingDetails',
           },
           {
-            text: 'Client Name \n Client Company',
+            text: `${data.client.name} \n ${data.client.shopName}`,
             style: 'invoiceBillingDetails',
           },
         ],
@@ -217,7 +231,7 @@ export const generateInvoiceTemplate = (data: Data) => {
           // headers are automatically repeated if the table spans over multiple pages
           // you can declare how many rows should be treated as headers
           headerRows: 1,
-          widths: [45, 'auto', 60, 'auto', 80],
+          widths: [45, 'auto', 60, 'auto', 'auto', 80],
 
           body: makeProductsBody(data.products),
         }, // table

@@ -3,10 +3,14 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 export class InvoiceProductsDto {
   @IsNotEmpty()
-  @ApiModelProperty({ description: 'id of client selected' })
+  @ApiModelProperty({ description: 'id of product selected' })
   id: number;
 
   @IsNotEmpty()
-  @ApiModelProperty({ description: 'Invoice date' })
+  @ApiModelProperty({ description: 'Product quantity' })
   quantity: number;
+
+  @IsNotEmpty()
+  @ApiModelProperty({ description: 'Product discount' })
+  discount: number;
 }
