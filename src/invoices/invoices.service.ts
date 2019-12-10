@@ -19,6 +19,9 @@ import { FullInvoiceDetails } from './dto/output.dto';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 import { BusinessInfoRepository } from '../business-info/business-info.repository';
 import { generateInvoiceTemplate } from '../helpers/invoice-template';
+import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
+import { SalesOrders } from 'src/sales-orders/sales-orders.entity';
+import { SalesOrderToProducts } from 'src/salesOrder-products/salesOrder-products.entity';
 
 @Injectable()
 export class InvoicesService {
@@ -33,6 +36,8 @@ export class InvoicesService {
     private invoiceToProductsRepository: InvoiceToProductsRepository,
     @InjectRepository(SalesOrdersRepository)
     private salesOrderRepository: SalesOrdersRepository,
+    @InjectRepository(SalesOrdersToProductsRepository)
+    private salesOrdersToProductsRepository: SalesOrdersToProductsRepository,
     @InjectRepository(BusinessInfoRepository)
     private businessInfoRepository: BusinessInfoRepository,
   ) {}
@@ -48,6 +53,7 @@ export class InvoicesService {
         name: '%' + options.clientName + '%',
       });
     }
+    queryBuilder.orderBy('invoice.id', 'DESC');
     return paginate<Invoices>(queryBuilder, options);
   }
 
@@ -206,27 +212,25 @@ export class InvoicesService {
     };
   }
 
-  async transformToInvoice(
-    invoiceData: CreateInvoiceDto,
-    userId,
-    salesOrderId,
-  ) {
+  async transformToInvoice(userId, salesOrderId) {
     const salesOrder = await this.salesOrderRepository.findOne(salesOrderId);
-
+    const salesOrderProducts = await this.salesOrdersToProductsRepository.retrieveSalesOrderProducts(
+      salesOrderId,
+    );
     if (!salesOrder) {
       throw new NotFoundException(
         'Not able to find the sales order you are trying to convert',
       );
     }
+    const invoiceData = this.createInvoiceData(salesOrder, salesOrderProducts);
     try {
-      await this.saveInvoice(invoiceData, userId);
+      const data = await this.saveInvoice(invoiceData, userId);
+      return data;
     } catch (err) {
       throw new InternalServerErrorException(
         'There was a problem saving your invoice',
       );
     }
-    await this.salesOrderRepository.delete(salesOrderId);
-    return 'OK';
   }
 
   generatePdf(data, res) {
@@ -242,5 +246,30 @@ export class InvoicesService {
 
   makeZero(num: number) {
     return isNaN(num) ? 0 : num;
+  }
+
+  createInvoiceData(
+    data: SalesOrders,
+    products: SalesOrderToProducts[],
+  ): CreateInvoiceDto {
+    return {
+      settings: {
+        clientId: data.clientId,
+        date: data.date,
+        // @ts-ignore
+        re: parseFloat(data.re),
+        // @ts-ignore
+        transportPrice: parseFloat(data.transportPrice),
+        paymentType: data.paymentType,
+        // @ts-ignore
+        tax: parseFloat(data.tax),
+      },
+      products: products.map(product => ({
+        id: product.productId,
+        quantity: product.quantity,
+        discount: product.discount,
+        price: product.price,
+      })),
+    };
   }
 }

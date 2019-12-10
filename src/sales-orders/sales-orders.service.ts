@@ -50,6 +50,7 @@ export class SalesOrdersService {
         name: '%' + options.clientName + '%',
       });
     }
+    queryBuilder.orderBy('sales_order.id', 'DESC');
     return paginate<SalesOrders>(queryBuilder, options);
   }
 

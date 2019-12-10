@@ -23,6 +23,18 @@ export class SalesOrdersToProductsRepository extends Repository<
     return this.storeSalesOrderProducts(salesOrderId, products);
   }
 
+  async retrieveSalesOrderProducts(salesOrderId) {
+    return this.createQueryBuilder('salesOrderProduct')
+      .where('salesOrderProduct.salesOrderId=:salesOrderId', { salesOrderId })
+      .select([
+        'salesOrderProduct.quantity',
+        'salesOrderProduct.productId',
+        'salesOrderProduct.discount',
+        'salesOrderProduct.price',
+      ])
+      .getMany();
+  }
+
   prepareForStore(salesOrderId, products) {
     return products.map(product => ({
       salesOrderId,

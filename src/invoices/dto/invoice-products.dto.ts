@@ -13,4 +13,10 @@ export class InvoiceProductsDto {
   @IsNotEmpty()
   @ApiModelProperty({ description: 'Product discount' })
   discount: number;
+
+  @IsNotEmpty()
+  @ApiModelProperty({
+    description: 'Product price at the time of making the invoice',
+  })
+  price: number;
 }

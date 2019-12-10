@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
   Request,
   Response,
@@ -74,19 +75,19 @@ export class InvoicesController {
     return this.invoicesService.generatePdf(response, res);
   }
 
-  @Post('transform-sales-order/:salesOrderId')
-  @UsePipes(ValidationPipe)
+  @Put('transform-sales-order/:salesOrderId')
   async transformSalesOrder(
-    @Body() invoiceData: CreateInvoiceDto,
     @Param('salesOrderId', ParseIntPipe) salesOrderId: number,
     @Request() req: any,
+    @Response() res: any,
   ) {
     const { userId } = req.user;
-    await this.invoicesService.transformToInvoice(
-      invoiceData,
+    const response = await this.invoicesService.transformToInvoice(
       userId,
       salesOrderId,
     );
+
+    return this.invoicesService.generatePdf(response, res);
   }
 
   @Patch(':id')

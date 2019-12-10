@@ -8,6 +8,8 @@ import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PaymentType } from './invoices.entity';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 import { BusinessInfoRepository } from '../business-info/business-info.repository';
+import { SalesOrderToProducts } from '../salesOrder-products/salesOrder-products.entity';
+import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
 
 const mockClientsRepository = () => ({
   findOne: jest.fn(),
@@ -29,6 +31,10 @@ const mockSalesOrdersRepository = () => ({
 
 const mockBusinessInfoRepository = () => ({
   findOne: jest.fn(),
+});
+
+const mockSalesOrderToProductsRepository = () => ({
+  retrieveSalesOrderProducts: jest.fn(),
 });
 
 const creteInvoiceData = {
@@ -78,6 +84,7 @@ describe('InvoicesService', () => {
   let productsRepository;
   let salesOrderRepository;
   let businessInfoRepository;
+  let salesOrderToProductsRepository;
   const invoiceResult = {
     id: 1,
     totalPrice: '29.99',
@@ -147,6 +154,10 @@ describe('InvoicesService', () => {
           provide: BusinessInfoRepository,
           useFactory: mockBusinessInfoRepository,
         },
+        {
+          provide: SalesOrdersToProductsRepository,
+          useFactory: mockSalesOrderToProductsRepository,
+        },
       ],
     }).compile();
 
@@ -164,6 +175,9 @@ describe('InvoicesService', () => {
     businessInfoRepository = await module.get<BusinessInfoRepository>(
       BusinessInfoRepository,
     );
+    salesOrderToProductsRepository = await module.get<
+      SalesOrdersToProductsRepository
+    >(SalesOrdersToProductsRepository);
   });
 
   describe('delete invoice', () => {
@@ -306,19 +320,15 @@ describe('InvoicesService', () => {
       spy.mockResolvedValue(true);
       salesOrderRepository.findOne.mockResolvedValue(true);
       invoicesRepository.delete.mockResolvedValue(true);
-      const result = await invoiceService.transformToInvoice(
-        creteInvoiceData,
-        1,
-        salesOrderId,
-      );
+      const result = await invoiceService.transformToInvoice(1, salesOrderId);
       expect(salesOrderRepository.delete).toHaveBeenCalledWith(salesOrderId);
       expect(result).toEqual('OK');
     });
     it('should throw an error with not found sales order id', async () => {
       salesOrderRepository.findOne.mockResolvedValue(null);
-      await expect(
-        invoiceService.transformToInvoice(creteInvoiceData, 1, 5),
-      ).rejects.toThrow(NotFoundException);
+      await expect(invoiceService.transformToInvoice(1, 5)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

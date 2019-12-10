@@ -49,7 +49,7 @@ export class SalesOrders extends BaseEntity {
   clientId: number;
 
   @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
-  date: Date;
+  date: string;
 
   @CreateDateColumn()
   createdAt: Date;

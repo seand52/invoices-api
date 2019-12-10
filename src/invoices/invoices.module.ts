@@ -8,6 +8,7 @@ import { ProductsRepository } from '../products/products.repository';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 import { BusinessInfoRepository } from '../business-info/business-info.repository';
+import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { BusinessInfoRepository } from '../business-info/business-info.repositor
     TypeOrmModule.forFeature([InvoiceToProductsRepository]),
     TypeOrmModule.forFeature([SalesOrdersRepository]),
     TypeOrmModule.forFeature([BusinessInfoRepository]),
+    TypeOrmModule.forFeature([SalesOrdersToProductsRepository]),
   ],
   controllers: [InvoicesController],
   providers: [InvoicesService],
