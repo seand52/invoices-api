@@ -11,6 +11,7 @@ import {
 import { Users } from '../users/users.entity';
 import { Clients } from '../clients/clients.entity';
 import { InvoiceToProducts } from '../invoice-products/invoice-products.entity';
+const moment = require('moment');
 
 export enum PaymentType {
   CASH = 'Efectivo',
@@ -78,4 +79,8 @@ export class Invoices extends BaseEntity {
     invoiceToProducts => invoiceToProducts.invoice,
   )
   public invoiceToProducts!: InvoiceToProducts[];
+
+  formatDate(date: string | Date): string {
+    return moment(date).format('DD-MM-YYYY');
+  }
 }

@@ -27,6 +27,15 @@ interface Data {
   };
 }
 
+const currencyFormatEs = num => {
+  return (
+    num
+      .toFixed(2) // always two decimal digits
+      .replace('.', ',') // replace decimal point character with ,
+      .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.') + ' €'
+  ); // use . as a separator
+};
+
 const makeProductsBody = (products: InvoiceProducts[]) => {
   const body = [
     // Table Header
@@ -88,7 +97,7 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
         margin: [0, 5, 0, 0],
       },
       {
-        text: `${product.price}€`,
+        text: currencyFormatEs(product.price),
         style: 'itemNumber',
         fontSize: 9,
         // @ts-ignore
@@ -102,7 +111,10 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
         margin: [0, 5, 0, 0],
       },
       {
-        text: `${product.finalPrice}€`,
+        text: new Intl.NumberFormat('de-DE', {
+          style: 'currency',
+          currency: 'EUR',
+        }).format(product.finalPrice),
         style: 'itemNumber',
         fontSize: 9,
         // @ts-ignore
@@ -299,32 +311,32 @@ export const generateInvoiceTemplate = (data: Data) => {
                 fontSize: 10,
               },
               {
-                text: data.totals.productsTotal,
+                text: currencyFormatEs(data.totals.productsTotal),
                 style: 'itemNumber',
                 fontSize: 10,
               },
               {
-                text: data.totals.tax,
+                text: currencyFormatEs(data.totals.tax),
                 style: 'itemNumber',
                 fontSize: 10,
               },
               {
-                text: data.totals.re,
+                text: currencyFormatEs(data.totals.re),
                 style: 'itemNumber',
                 fontSize: 10,
               },
               {
-                text: data.totals.subTotal,
+                text: currencyFormatEs(data.totals.subTotal),
                 style: 'itemNumber',
                 fontSize: 10,
               },
               {
-                text: data.totals.transport,
+                text: currencyFormatEs(data.totals.transport),
                 style: 'itemNumber',
                 fontSize: 10,
               },
               {
-                text: data.totals.invoiceTotal,
+                text: currencyFormatEs(data.totals.invoiceTotal),
                 style: 'itemTotal',
                 fontSize: 10,
               },

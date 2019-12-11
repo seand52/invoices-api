@@ -1,9 +1,11 @@
+const moment = require('moment');
 import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
   InternalServerErrorException,
   ForbiddenException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoicesRepository } from './invoices.repository';
@@ -54,7 +56,15 @@ export class InvoicesService {
       });
     }
     queryBuilder.orderBy('invoice.id', 'DESC');
-    return paginate<Invoices>(queryBuilder, options);
+    const result = await paginate<Invoices>(queryBuilder, options);
+    return {
+      ...result,
+      // @ts-ignore
+      items: result.items.map(item => ({
+        ...item,
+        date: item.formatDate(item.date),
+      })),
+    };
   }
 
   async getInvoiceById(id: number): Promise<FullInvoiceDetails> {
@@ -149,19 +159,28 @@ export class InvoicesService {
       totalPrice: totals.invoiceTotal,
       userId,
     });
-
     await this.invoiceToProductsRepository.storeInvoiceProducts(
       result.identifiers[0].id,
       products,
     );
 
+    if (invoiceData.settings.transportPrice > 0) {
+      await this.invoicesRepository.createInvoice({
+        clientId: client.id,
+        date: invoiceData.settings.date,
+        paymentType: invoiceData.settings.paymentType,
+        transportPrice: invoiceData.settings.transportPrice,
+        userId,
+        totalPrice: invoiceData.settings.transportPrice,
+      });
+    }
     return {
       client,
       products,
       businessInfo,
       totals,
       invoiceData: {
-        date: invoiceData.settings.date,
+        date: moment(invoiceData.settings.date).format('DD-MM-YYYY'),
         id: result.identifiers[0].id,
       },
     };
@@ -206,7 +225,7 @@ export class InvoicesService {
       businessInfo,
       totals,
       invoiceData: {
-        date: invoiceData.settings.date,
+        date: moment(invoiceData.settings.date).format('DD-MM-YYYY'),
         id: invoiceId,
       },
     };
@@ -222,9 +241,16 @@ export class InvoicesService {
         'Not able to find the sales order you are trying to convert',
       );
     }
+
+    if (salesOrder.expired === 1) {
+      throw new NotAcceptableException(
+        'This sales order has already been converted',
+      );
+    }
     const invoiceData = this.createInvoiceData(salesOrder, salesOrderProducts);
     try {
       const data = await this.saveInvoice(invoiceData, userId);
+      await this.salesOrderRepository.update(salesOrder.id, { expired: 1 });
       return data;
     } catch (err) {
       throw new InternalServerErrorException(

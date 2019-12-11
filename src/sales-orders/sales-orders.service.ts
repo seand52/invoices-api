@@ -51,7 +51,15 @@ export class SalesOrdersService {
       });
     }
     queryBuilder.orderBy('sales_order.id', 'DESC');
-    return paginate<SalesOrders>(queryBuilder, options);
+    const result = await paginate<SalesOrders>(queryBuilder, options);
+    return {
+      ...result,
+      // @ts-ignore
+      items: result.items.map(item => ({
+        ...item,
+        date: item.formatDate(item.date),
+      })),
+    };
   }
 
   async getSalesOrderById(id: number): Promise<FullSalesOrdersDetails> {

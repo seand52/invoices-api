@@ -11,6 +11,7 @@ import {
 import { Users } from '../users/users.entity';
 import { Clients } from '../clients/clients.entity';
 import { SalesOrderToProducts } from '../salesOrder-products/salesOrder-products.entity';
+const moment = require('moment');
 
 enum PaymentType {
   CASH = 'Efectivo',
@@ -51,6 +52,9 @@ export class SalesOrders extends BaseEntity {
   @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   date: string;
 
+  @Column('tinyint', { nullable: false, default: 0, width: 1 })
+  expired: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -73,4 +77,8 @@ export class SalesOrders extends BaseEntity {
     salesOrderToProducts => salesOrderToProducts.salesOrder,
   )
   public salesOrderToProducts!: SalesOrderToProducts[];
+
+  formatDate(date: string | Date): string {
+    return moment(date).format('DD-MM-YYYY');
+  }
 }
