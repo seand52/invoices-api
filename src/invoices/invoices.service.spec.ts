@@ -4,7 +4,11 @@ import { ClientsRepository } from '../clients/clients.repository';
 import { InvoicesRepository } from './invoices.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { InvoiceToProductsRepository } from '../invoice-products/invoice-products.repository';
-import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  NotFoundException,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { PaymentType } from './invoices.entity';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 import { BusinessInfoRepository } from '../business-info/business-info.repository';
@@ -27,6 +31,7 @@ const mockProductsRepository = () => ({
 const mockSalesOrdersRepository = () => ({
   findOne: jest.fn(),
   delete: jest.fn(),
+  update: jest.fn(),
 });
 
 const mockBusinessInfoRepository = () => ({
@@ -315,19 +320,78 @@ describe('InvoicesService', () => {
   describe('transform invoice from albaran', () => {
     it('should correctly save the invoice', async () => {
       const salesOrderId = 5;
-      salesOrderRepository.findOne.mockResolvedValue(true);
-      const spy: any = jest.spyOn(invoiceService, 'saveInvoice');
-      spy.mockResolvedValue(true);
-      salesOrderRepository.findOne.mockResolvedValue(true);
-      invoicesRepository.delete.mockResolvedValue(true);
+      salesOrderRepository.findOne.mockResolvedValue({
+        expired: 0,
+      });
+      salesOrderToProductsRepository.retrieveSalesOrderProducts.mockResolvedValue(
+        [
+          {
+            id: 1,
+            quantity: 5,
+            discount: 0.2,
+            price: 50,
+          },
+        ],
+      );
+      const spy: any = jest.spyOn(invoiceService, 'createInvoiceData');
+      spy.mockReturnValue({
+        settings: {
+          clientId: 5,
+          date: '2019/12/12',
+          re: 0.052,
+          transportPrice: 10,
+          paymentType: 'Efectivo',
+          tax: 0.21,
+        },
+        products: [
+          {
+            id: 1,
+            quantity: 5,
+            discount: 0.2,
+            price: 50,
+          },
+        ],
+      });
+      const spy2: any = jest.spyOn(invoiceService, 'saveInvoice');
+      spy2.mockResolvedValue(true);
+      salesOrderRepository.update.mockResolvedValue(true);
       const result = await invoiceService.transformToInvoice(1, salesOrderId);
-      expect(salesOrderRepository.delete).toHaveBeenCalledWith(salesOrderId);
-      expect(result).toEqual('OK');
+      expect(result).toEqual(true);
+      expect(invoiceService.saveInvoice).toHaveBeenCalledWith(
+        {
+          settings: {
+            clientId: 5,
+            date: '2019/12/12',
+            re: 0.052,
+            transportPrice: 10,
+            paymentType: 'Efectivo',
+            tax: 0.21,
+          },
+          products: [
+            {
+              id: 1,
+              quantity: 5,
+              discount: 0.2,
+              price: 50,
+            },
+          ],
+        },
+        1,
+      );
     });
     it('should throw an error with not found sales order id', async () => {
       salesOrderRepository.findOne.mockResolvedValue(null);
       await expect(invoiceService.transformToInvoice(1, 5)).rejects.toThrow(
         NotFoundException,
+      );
+    });
+
+    it('should throw an error when trying to convert an expired sales order', async () => {
+      salesOrderRepository.findOne.mockResolvedValue({
+        expired: 1,
+      });
+      await expect(invoiceService.transformToInvoice(1, 5)).rejects.toThrow(
+        NotAcceptableException,
       );
     });
   });
