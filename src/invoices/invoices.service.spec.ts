@@ -208,18 +208,21 @@ describe('InvoicesService', () => {
       products: [
         {
           id: 1,
+          description: 'desc1',
           quantity: 3,
           discount: 0,
           price: 10,
         },
         {
           id: 2,
+          description: 'desc2',
           quantity: 4,
           discount: 0,
           price: 10,
         },
         {
           id: 3,
+          description: 'desc3',
           quantity: 2,
           discount: 0,
           price: 10,
@@ -241,32 +244,6 @@ describe('InvoicesService', () => {
         id: 2,
         name: 'pepito',
       });
-      productsRepository.retrieveProductDetails.mockResolvedValue([
-        {
-          id: 1,
-          description: 'test2',
-          price: 29.99,
-          userId: 14,
-          createdAt: '2019-11-18T16:38:59.073Z',
-          updatedAt: '2019-11-18T16:38:59.073Z',
-        },
-        {
-          id: 2,
-          description: 'test2',
-          price: 39.99,
-          userId: 14,
-          createdAt: '2019-11-18T16:38:59.073Z',
-          updatedAt: '2019-11-18T16:38:59.073Z',
-        },
-        {
-          id: 3,
-          description: 'test2',
-          price: 19.99,
-          userId: 14,
-          createdAt: '2019-11-18T16:38:59.073Z',
-          updatedAt: '2019-11-18T16:38:59.073Z',
-        },
-      ]);
       businessInfoRepository.findOne.mockResolvedValue(true);
       const result = await invoiceService.retrieveRelevantData(
         invoiceData,
@@ -278,7 +255,32 @@ describe('InvoicesService', () => {
           id: 2,
           name: 'pepito',
         },
-        products: formattedProducts,
+        products: [
+          {
+            id: 1,
+            description: 'desc1',
+            quantity: 3,
+            discount: 0,
+            price: 10,
+            finalPrice: 3 * 10 * (1 - 0),
+          },
+          {
+            id: 2,
+            description: 'desc2',
+            quantity: 4,
+            discount: 0,
+            price: 10,
+            finalPrice: 4 * 10 * (1 - 0),
+          },
+          {
+            id: 3,
+            description: 'desc3',
+            quantity: 2,
+            discount: 0,
+            price: 10,
+            finalPrice: 2 * 10 * (1 - 0),
+          },
+        ],
         businessInfo: true,
       });
     });

@@ -12,9 +12,6 @@ export class InvoiceToProducts {
   public invoiceId!: number;
 
   @Column('int', { nullable: false })
-  public productId!: number;
-
-  @Column('int', { nullable: false })
   public quantity!: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 3, default: 0 })
@@ -23,13 +20,11 @@ export class InvoiceToProducts {
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
   public price: number;
 
+  @Column('varchar', { nullable: false, default: '', length: 55 })
+  description: string;
+
   @ManyToOne(type => Invoices, invoice => invoice.invoiceToProducts, {
     onDelete: 'CASCADE',
   })
   public invoice!: Invoices;
-
-  @ManyToOne(type => Products, product => product.invoiceToProducts, {
-    onDelete: 'CASCADE',
-  })
-  public product!: Products;
 }

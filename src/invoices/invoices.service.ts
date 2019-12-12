@@ -117,25 +117,19 @@ export class InvoicesService {
   }
 
   async retrieveRelevantData(invoiceData, clientId, userId) {
-    const productIds = invoiceData.products.map(item => item.id);
-    const [client, products, businessInfo] = await Promise.all([
+    const [client, businessInfo] = await Promise.all([
       this.clientsRepository.findOne(clientId),
-      this.productsRepository.retrieveProductDetails(productIds),
       this.businessInfoRepository.findOne({ userId }),
     ]);
-    const fullProductData = products.map(product => {
-      const invoiceProduct = invoiceData.products.find(
-        item => item.id === product.id,
-      );
+    const fullProductData = invoiceData.products.map(product => {
       return {
         ...product,
-        price: parseFloat(invoiceProduct.price),
-        quantity: invoiceProduct.quantity,
-        discount: this.makeZero(invoiceProduct.discount),
+        description: product.description,
+        price: parseFloat(product.price),
+        quantity: product.quantity,
+        discount: this.makeZero(product.discount),
         finalPrice: this.round(
-          invoiceProduct.quantity *
-            product.price *
-            (1 - invoiceProduct.discount),
+          product.quantity * parseFloat(product.price) * (1 - product.discount),
         ),
       };
     });
@@ -165,6 +159,10 @@ export class InvoicesService {
     );
 
     if (invoiceData.settings.transportPrice > 0) {
+      /*
+      Automatically make a separate transport only invoice
+      if the OG invoice has a transport cost due to client request
+      */
       await this.invoicesRepository.createInvoice({
         clientId: client.id,
         date: invoiceData.settings.date,
@@ -295,6 +293,7 @@ export class InvoicesService {
         quantity: product.quantity,
         discount: product.discount,
         price: product.price,
+        description: 'whatup',
       })),
     };
   }

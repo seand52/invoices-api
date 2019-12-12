@@ -24,12 +24,7 @@ interface InvoiceProducts {
   invoiceId: number;
   productId: number;
   quantity: number;
-  product: {
-    id: number;
-    description: string;
-    price: string;
-    userId: number;
-    createdAt: string;
-    updatedAt: string;
-  };
+  description: string;
+  price: number;
+  discount: number;
 }

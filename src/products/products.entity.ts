@@ -39,12 +39,6 @@ export class Products extends BaseEntity {
   user: Users;
 
   @OneToMany(
-    type => InvoiceToProducts,
-    invoiceToProducts => invoiceToProducts.product,
-  )
-  public invoiceToProducts!: InvoiceToProducts[];
-
-  @OneToMany(
     type => SalesOrderToProducts,
     salesOrderToProducts => salesOrderToProducts.product,
   )
