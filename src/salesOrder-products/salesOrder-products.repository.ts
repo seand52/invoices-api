@@ -28,9 +28,9 @@ export class SalesOrdersToProductsRepository extends Repository<
       .where('salesOrderProduct.salesOrderId=:salesOrderId', { salesOrderId })
       .select([
         'salesOrderProduct.quantity',
-        'salesOrderProduct.productId',
         'salesOrderProduct.discount',
         'salesOrderProduct.price',
+        'salesOrderProduct.description',
       ])
       .getMany();
   }

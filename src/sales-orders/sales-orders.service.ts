@@ -64,6 +64,9 @@ export class SalesOrdersService {
 
   async getSalesOrderById(id: number): Promise<FullSalesOrdersDetails> {
     const [invoice] = await this.salesOrdersRepository.retrieveInvoiceInfo(id);
+    // rename property for frontend. ideally should be using an alias in query
+    invoice.invoiceToProducts = [...invoice.salesOrderToProducts];
+    delete invoice.salesOrderToProducts;
     return invoice;
   }
 
