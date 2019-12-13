@@ -11,9 +11,6 @@ export class SalesOrderToProducts {
   public salesOrderId!: number;
 
   @Column('int', { nullable: false })
-  public productId!: number;
-
-  @Column('int', { nullable: false })
   public quantity!: number;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 3, default: 0 })
@@ -21,6 +18,9 @@ export class SalesOrderToProducts {
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
   public price: number;
+
+  @Column('varchar', { nullable: false, default: '', length: 55 })
+  description: string;
 
   @ManyToOne(
     type => SalesOrders,
@@ -30,9 +30,4 @@ export class SalesOrderToProducts {
     },
   )
   public salesOrder!: SalesOrders;
-
-  @ManyToOne(type => Products, product => product.salesOrderToProducts, {
-    onDelete: 'CASCADE',
-  })
-  public product!: Products;
 }

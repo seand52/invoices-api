@@ -289,11 +289,11 @@ export class InvoicesService {
         tax: parseFloat(data.tax),
       },
       products: products.map(product => ({
-        id: product.productId,
+        id: product.id,
         quantity: product.quantity,
         discount: product.discount,
         price: product.price,
-        description: 'whatup',
+        description: product.description,
       })),
     };
   }

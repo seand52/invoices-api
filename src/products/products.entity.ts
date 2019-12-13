@@ -37,10 +37,4 @@ export class Products extends BaseEntity {
     onDelete: 'CASCADE',
   })
   user: Users;
-
-  @OneToMany(
-    type => SalesOrderToProducts,
-    salesOrderToProducts => salesOrderToProducts.product,
-  )
-  public salesOrderToProducts!: SalesOrderToProducts[];
 }

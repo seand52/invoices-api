@@ -7,12 +7,10 @@ export class SalesOrdersRepository extends Repository<SalesOrders> {
     const salesOrder = await this.createQueryBuilder('sales_order')
       .leftJoin('sales_order.client', 'client')
       .leftJoin('sales_order.salesOrderToProducts', 'itp')
-      .leftJoin('itp.product', 'product')
       .select([
         'sales_order',
         'itp',
         'client.name',
-        'product',
         'client.email',
         'client.telephone1',
       ])
