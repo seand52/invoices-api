@@ -48,7 +48,7 @@ export class ProductsService {
       return product.identifiers[0].id;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        throw new ConflictException('DUPLICATE_PRODUCT');
+        throw new ConflictException('You cannot create a duplicate product');
       } else {
         throw new InternalServerErrorException();
       }

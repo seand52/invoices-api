@@ -29,7 +29,9 @@ export class BusinessInfoService {
       await this.businessInfoRepository.insert({ ...businessInfoData, userId });
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        throw new ConflictException('DUPLICATE_BUSINESS');
+        throw new ConflictException(
+          'Sorry, this seems to be a duplicate business',
+        );
       } else {
         throw new InternalServerErrorException();
       }

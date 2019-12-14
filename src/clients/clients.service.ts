@@ -64,7 +64,9 @@ export class ClientsService {
       return client.identifiers[0].id;
     } catch (err) {
       if (err.code === 'ER_DUP_ENTRY') {
-        throw new ConflictException('DUPLICATE_CLIENT');
+        throw new ConflictException(
+          'Sorry, there is already a client with this email address!',
+        );
       } else {
         throw new InternalServerErrorException();
       }
