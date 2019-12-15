@@ -16,6 +16,7 @@ import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { FullSalesOrdersDetails } from './dto/output.dto';
 import { SalesOrders } from './sales-orders.entity';
 import { SalesOrdersRepository } from './sales-orders.repository';
+const moment = require('moment');
 
 @Injectable()
 export class SalesOrdersService {
@@ -114,6 +115,7 @@ export class SalesOrdersService {
       result.identifiers[0].id,
       products,
     );
+    debugger;
     return {
       client,
       products,
@@ -121,14 +123,21 @@ export class SalesOrdersService {
       totals,
       invoiceData: {
         id: result.identifiers[0].id,
-        date: salesOrderData.settings.date,
+        date: moment(salesOrderData.settings.date).format('DD-MM-YYYY'),
+        expirationDate: salesOrderData.settings.expirationDate
+          ? moment(salesOrderData.settings.expirationDate).format('DD-MM-YYYY')
+          : null,
       },
     };
   }
 
-  async updateSalesOrder(invoiceData: CreateSalesOrderDto, invoiceId, userId) {
-    const { clientId } = invoiceData.settings;
-    const salesOrder = await this.salesOrdersRepository.findOne(invoiceId);
+  async updateSalesOrder(
+    salesOrderData: CreateSalesOrderDto,
+    salesOrderId,
+    userId,
+  ) {
+    const { clientId } = salesOrderData.settings;
+    const salesOrder = await this.salesOrdersRepository.findOne(salesOrderId);
     if (!salesOrder) {
       throw new NotFoundException(
         'Could not find the invoice you are trying to edit',
@@ -144,26 +153,27 @@ export class SalesOrdersService {
       products,
       businessInfo,
     } = await this.invoiceService.retrieveRelevantData(
-      invoiceData,
+      salesOrderData,
       clientId,
       userId,
     );
+    debugger;
     const totals = this.invoiceService.calculateTotalprice(
       products,
-      invoiceData.settings,
+      salesOrderData.settings,
     );
 
     await this.salesOrdersRepository.updateSalesOrder(
       {
-        ...invoiceData.settings,
+        ...salesOrderData.settings,
         totalPrice: totals.invoiceTotal,
         userId,
       },
-      invoiceId,
+      salesOrderId,
     );
 
     await this.salesOrdersToProductsRepository.updateSalesOrderProducts(
-      invoiceId,
+      salesOrderId,
       products,
     );
 
@@ -173,8 +183,11 @@ export class SalesOrdersService {
       businessInfo,
       totals,
       invoiceData: {
-        id: invoiceId,
-        date: invoiceData.settings.date,
+        id: salesOrderId,
+        date: moment(salesOrderData.settings.date).format('DD-MM-YYYY'),
+        expirationDate: salesOrderData.settings.expirationDate
+          ? moment(salesOrderData.settings.expirationDate).format('DD-MM-YYYY')
+          : null,
       },
     };
   }

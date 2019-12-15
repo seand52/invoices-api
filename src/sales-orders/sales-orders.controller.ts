@@ -99,6 +99,6 @@ export class SalesOrdersController {
       invoiceId,
       userId,
     );
-    return this.invoiceService.generatePdf(response, res);
+    return this.salesOrdersService.generatePdf(response, res);
   }
 }

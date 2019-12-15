@@ -12,6 +12,10 @@ export class SalesOrderSettings {
   date: string;
 
   @IsOptional()
+  @ApiModelProperty({ description: 'Date of expiration' })
+  expirationDate: string;
+
+  @IsOptional()
   @Min(0)
   @Max(1)
   @ApiModelProperty({

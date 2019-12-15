@@ -52,6 +52,9 @@ export class SalesOrders extends BaseEntity {
   @Column('timestamp', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   date: string;
 
+  @Column('timestamp', { nullable: true })
+  expirationDate: string;
+
   @Column('tinyint', { nullable: false, default: 0, width: 1 })
   expired: number;
 

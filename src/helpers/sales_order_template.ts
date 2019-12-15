@@ -23,6 +23,7 @@ interface Data {
   totals: Totals;
   invoiceData: {
     date: string;
+    expirationDate: string | null;
     id: string;
   };
 }
@@ -113,6 +114,37 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
   return body;
 };
 
+const makeDates = invoiceData => {
+  const data = [
+    {
+      columns: [
+        {
+          text: [{ text: 'Fecha de emisión: ', bold: true }, invoiceData.date],
+          style: 'invoiceSubTitle',
+          // width: '100',
+          margin: [30, 5, 90, 0],
+        },
+      ],
+    },
+  ];
+  if (invoiceData.expirationDate) {
+    data.push({
+      columns: [
+        {
+          text: [
+            { text: 'Fecha de expiración: ', bold: true },
+            invoiceData.expirationDate,
+          ],
+          style: 'invoiceSubTitle',
+          //   width: '*',
+          margin: [30, 5, 78, 0],
+        },
+      ],
+    });
+  }
+  return data;
+};
+
 export const generateSalesOrderTemplate = (data: Data) => {
   return {
     pageMargins: [40, 80, 40, 60],
@@ -128,34 +160,13 @@ export const generateSalesOrderTemplate = (data: Data) => {
 
         [
           {
-            text: 'ALBARAN',
+            text: `ALBARAN #${data.invoiceData.id}`,
             style: 'invoiceTitle',
             width: '*',
             margin: [35, 15, 80, 0],
           },
           {
-            stack: [
-              {
-                columns: [
-                  {
-                    text: `Número de Albaran: ${data.invoiceData.id}`,
-                    style: 'invoiceSubTitle',
-                    // width: '100',
-                    margin: [30, 5, 69, 0],
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: `${data.invoiceData.date}`,
-                    style: 'invoiceSubTitle',
-                    //   width: '*',
-                    margin: [30, 5, 69, 0],
-                  },
-                ],
-              },
-            ],
+            stack: makeDates(data.invoiceData),
           },
         ],
       ],
