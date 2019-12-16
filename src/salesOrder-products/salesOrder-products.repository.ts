@@ -43,6 +43,7 @@ export class SalesOrdersToProductsRepository extends Repository<
       discount: product.discount,
       price: product.price,
       reference: product.reference,
+      description: product.description,
     }));
   }
 }

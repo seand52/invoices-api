@@ -41,12 +41,12 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
     // Table Header
     [
       {
-        text: 'Artículo',
-        style: 'itemsHeader',
+        text: 'Referencia',
+        style: ['itemsHeader', 'center'],
         fontSize: 10,
       },
       {
-        text: 'Referencia',
+        text: 'Descripción',
         style: ['itemsHeader', 'center'],
         fontSize: 10,
       },
@@ -76,15 +76,15 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
   products.forEach(product => {
     body.push([
       {
-        // @ts-ignore
-        text: product.id,
-        style: 'itemNumber',
+        text: product.reference,
+        style: ['itemSubTitle'],
         fontSize: 9,
+        // @ts-ignore
         margin: [0, 5, 0, 0],
       },
       {
-        text: product.reference,
-        style: 'itemSubTitle',
+        text: product.description,
+        style: ['itemSubTitle'],
         fontSize: 9,
         // @ts-ignore
         margin: [0, 5, 0, 0],
@@ -92,20 +92,20 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
       {
         // @ts-ignore
         text: product.quantity,
-        style: 'itemNumber',
+        style: ['itemNumber'],
         fontSize: 9,
         margin: [0, 5, 0, 0],
       },
       {
         text: currencyFormatEs(product.price),
-        style: 'itemNumber',
+        style: ['itemNumber'],
         fontSize: 9,
         // @ts-ignore
         margin: [0, 5, 0, 0],
       },
       {
         text: `${product.discount * 100}%`,
-        style: 'itemNumber',
+        style: ['itemNumber'],
         fontSize: 9,
         // @ts-ignore
         margin: [0, 5, 0, 0],
@@ -115,7 +115,7 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
           style: 'currency',
           currency: 'EUR',
         }).format(product.finalPrice),
-        style: 'itemNumber',
+        style: ['itemNumber'],
         fontSize: 9,
         // @ts-ignore
         margin: [0, 5, 0, 0],

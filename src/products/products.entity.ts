@@ -18,6 +18,9 @@ export class Products extends BaseEntity {
   @Column('varchar', { nullable: false, length: 100 })
   reference: string;
 
+  @Column('varchar', { nullable: false, length: 100 })
+  description: string;
+
   @Column('decimal', { nullable: false, precision: 10, scale: 2 })
   price: number;
 

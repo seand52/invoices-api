@@ -125,6 +125,7 @@ export class InvoicesService {
       return {
         ...product,
         reference: product.reference,
+        description: product.description,
         price: parseFloat(product.price),
         quantity: product.quantity,
         discount: this.makeZero(product.discount),
@@ -133,6 +134,7 @@ export class InvoicesService {
         ),
       };
     });
+    debugger;
     return {
       products: fullProductData,
       client,

@@ -19,8 +19,11 @@ export class SalesOrderToProducts {
   @Column('decimal', { nullable: false, precision: 10, scale: 2, default: 0 })
   public price: number;
 
-  @Column('varchar', { nullable: false, default: '', length: 55 })
+  @Column('varchar', { nullable: false, default: '', length: 100 })
   reference: string;
+
+  @Column('varchar', { nullable: false, default: '', length: 100 })
+  description: string;
 
   @ManyToOne(
     type => SalesOrders,

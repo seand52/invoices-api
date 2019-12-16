@@ -29,6 +29,7 @@ export class InvoiceToProductsRepository extends Repository<InvoiceToProducts> {
       discount: product.discount,
       price: product.price,
       reference: product.reference,
+      description: product.description,
     }));
   }
 }
