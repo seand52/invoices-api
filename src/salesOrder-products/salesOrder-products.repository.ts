@@ -30,7 +30,7 @@ export class SalesOrdersToProductsRepository extends Repository<
         'salesOrderProduct.quantity',
         'salesOrderProduct.discount',
         'salesOrderProduct.price',
-        'salesOrderProduct.description',
+        'salesOrderProduct.reference',
       ])
       .getMany();
   }
@@ -42,7 +42,7 @@ export class SalesOrdersToProductsRepository extends Repository<
       quantity: product.quantity,
       discount: product.discount,
       price: product.price,
-      description: product.description,
+      reference: product.reference,
     }));
   }
 }

@@ -24,7 +24,7 @@ interface InvoiceProducts {
   invoiceId: number;
   productId: number;
   quantity: number;
-  description: string;
+  reference: string;
   price: number;
   discount: number;
 }

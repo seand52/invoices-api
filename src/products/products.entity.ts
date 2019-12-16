@@ -9,16 +9,14 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Users } from '../users/users.entity';
-import { InvoiceToProducts } from '../invoice-products/invoice-products.entity';
-import { SalesOrderToProducts } from '../salesOrder-products/salesOrder-products.entity';
 
 @Entity()
 export class Products extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { nullable: false, length: 255 })
-  description: string;
+  @Column('varchar', { nullable: false, length: 100 })
+  reference: string;
 
   @Column('decimal', { nullable: false, precision: 10, scale: 2 })
   price: number;

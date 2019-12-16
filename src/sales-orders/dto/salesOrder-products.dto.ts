@@ -20,5 +20,5 @@ export class SalesOrderProductsDto {
   @ApiModelProperty({
     description: 'Product description',
   })
-  description: string;
+  reference: string;
 }

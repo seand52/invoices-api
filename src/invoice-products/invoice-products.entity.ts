@@ -21,7 +21,7 @@ export class InvoiceToProducts {
   public price: number;
 
   @Column('varchar', { nullable: false, default: '', length: 55 })
-  description: string;
+  reference: string;
 
   @ManyToOne(type => Invoices, invoice => invoice.invoiceToProducts, {
     onDelete: 'CASCADE',

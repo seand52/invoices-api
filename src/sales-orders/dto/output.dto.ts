@@ -24,7 +24,7 @@ interface SalesOrderProducts {
   quantity: number;
   product: {
     id: number;
-    description: string;
+    reference: string;
     price: string;
     userId: number;
     createdAt: string;

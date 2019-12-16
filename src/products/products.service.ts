@@ -32,7 +32,7 @@ export class ProductsService {
     const queryBuilder = this.productsRepository.createQueryBuilder('product');
     queryBuilder.where('product.userId = :userId', { userId });
     if (options.name !== '') {
-      queryBuilder.where('product.description like :name', {
+      queryBuilder.where('product.reference like :name', {
         name: '%' + options.name + '%',
       });
     }

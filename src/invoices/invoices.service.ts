@@ -124,7 +124,7 @@ export class InvoicesService {
     const fullProductData = invoiceData.products.map(product => {
       return {
         ...product,
-        description: product.description,
+        reference: product.reference,
         price: parseFloat(product.price),
         quantity: product.quantity,
         discount: this.makeZero(product.discount),
@@ -293,7 +293,7 @@ export class InvoicesService {
         quantity: product.quantity,
         discount: product.discount,
         price: product.price,
-        description: product.description,
+        reference: product.reference,
       })),
     };
   }

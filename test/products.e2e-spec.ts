@@ -56,7 +56,7 @@ describe('AppController (e2e)', () => {
         expect(res.body.items.length).toEqual(3);
         expect(res.body.itemCount).toEqual(3);
         expect(res.body.totalItems).toEqual(4);
-        expect(res.body.items[0].description).toEqual('product description 1');
+        expect(res.body.items[0].reference).toEqual('product reference 1');
         expect(res.body.items[0].price).toEqual('29.99');
       });
   });
@@ -75,14 +75,14 @@ describe('AppController (e2e)', () => {
       .then(res => {
         expect(res.body instanceof Object).toBe(true);
         expect(res.body.id).toEqual(product.id);
-        expect(res.body.description).toEqual(product.description);
+        expect(res.body.reference).toEqual(product.reference);
         expect(res.body.price).toEqual(product.price);
       });
   });
 
   it('/ POST create product successfully ', async () => {
     const _product = {
-      description: 'product description',
+      reference: 'product reference',
       userId: user.id,
       price: 29.99,
     };
@@ -93,7 +93,7 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .then(res => {
         expect(res.body instanceof Object).toBe(true);
-        expect(res.body.description).toEqual(_product.description);
+        expect(res.body.reference).toEqual(_product.reference);
         expect(res.body.price.toString()).toEqual(_product.price.toString());
         expect(res.body.userId).toEqual(_product.userId);
       });
@@ -101,7 +101,7 @@ describe('AppController (e2e)', () => {
 
   it(' / DELETE product successfully', async () => {
     await productsRepository.save({
-      description: 'product description',
+      reference: 'product reference',
       price: 29.99,
       userId: user.id,
     });
@@ -115,7 +115,7 @@ describe('AppController (e2e)', () => {
 
   it('/ PATCH products successfully', async () => {
     await productsRepository.save({
-      description: 'product description',
+      reference: 'product reference',
       price: 1.52,
       userId: user.id,
     });

@@ -1,13 +1,12 @@
-import {  IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
 
 export class UpdateProductDto {
   @IsOptional()
-  @ApiModelProperty({description: 'Product description'})
-  description: string;
+  @ApiModelProperty({ description: 'Product description' })
+  reference: string;
 
   @IsOptional()
-  @ApiModelProperty({description: 'The price without IVA'})
+  @ApiModelProperty({ description: 'The price without IVA' })
   price: number;
-
 }

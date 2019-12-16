@@ -75,7 +75,7 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
         margin: [0, 5, 0, 0],
       },
       {
-        text: product.description,
+        text: product.reference,
         style: 'itemSubTitle',
         fontSize: 9,
         // @ts-ignore
