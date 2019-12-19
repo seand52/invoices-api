@@ -41,7 +41,11 @@ export class InvoicesController {
       { page, limit, clientName, route: 'http://localhost:3000/api/invoices' },
       userId,
     );
-    return { ...invoices, currentPage: Number(page) };
+    return {
+      ...invoices,
+      currentPage: Number(page),
+      rowsPerPage: Number(limit),
+    };
   }
 
   @Get(':id')

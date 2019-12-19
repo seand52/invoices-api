@@ -38,7 +38,11 @@ export class ProductsController {
       { page, limit, name, route: 'http://localhost:3000/api/products' },
       userId,
     );
-    return { ...products, currentPage: Number(page) };
+    return {
+      ...products,
+      currentPage: Number(page),
+      rowsPerPage: Number(limit),
+    };
   }
 
   @Get(':id')

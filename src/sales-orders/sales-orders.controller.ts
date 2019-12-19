@@ -51,7 +51,11 @@ export class SalesOrdersController {
       },
       userId,
     );
-    return { ...salesOrders, currentPage: Number(page) };
+    return {
+      ...salesOrders,
+      currentPage: Number(page),
+      rowsPerPage: Number(limit),
+    };
   }
 
   @Get(':id')

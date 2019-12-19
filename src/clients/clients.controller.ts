@@ -38,7 +38,11 @@ export class ClientsController {
       { page, limit, name, route: 'http://localhost:3000/api/clients' },
       userId,
     );
-    return { ...clients, currentPage: Number(page) };
+    return {
+      ...clients,
+      currentPage: Number(page),
+      rowsPerPage: Number(limit),
+    };
   }
 
   @Get('search')
