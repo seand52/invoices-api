@@ -31,6 +31,7 @@ export class SalesOrdersToProductsRepository extends Repository<
         'salesOrderProduct.discount',
         'salesOrderProduct.price',
         'salesOrderProduct.reference',
+        'salesOrderProduct.description',
       ])
       .getMany();
   }

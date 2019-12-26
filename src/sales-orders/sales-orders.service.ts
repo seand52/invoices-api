@@ -115,7 +115,22 @@ export class SalesOrdersService {
       result.identifiers[0].id,
       products,
     );
-    debugger;
+
+    if (salesOrderData.settings.transportPrice > 0) {
+      /*
+      Automatically make a separate transport only invoice
+      if the OG invoice has a transport cost due to client request
+      */
+      await this.salesOrdersRepository.createSalesOrder({
+        clientId: client.id,
+        date: salesOrderData.settings.date,
+        paymentType: salesOrderData.settings.paymentType,
+        transportPrice: salesOrderData.settings.transportPrice,
+        userId,
+        totalPrice: salesOrderData.settings.transportPrice,
+      });
+    }
+
     return {
       client,
       products,
@@ -157,7 +172,6 @@ export class SalesOrdersService {
       clientId,
       userId,
     );
-    debugger;
     const totals = this.invoiceService.calculateTotalprice(
       products,
       salesOrderData.settings,
