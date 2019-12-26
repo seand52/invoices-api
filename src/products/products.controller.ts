@@ -19,11 +19,15 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Products } from './products.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { ConfigService } from '../config/config.service';
 
 @Controller('products')
 @UseGuards(AuthGuard('jwt'))
 export class ProductsController {
-  constructor(private productsService: ProductsService) {}
+  constructor(
+    private productsService: ProductsService,
+    private configService: ConfigService,
+  ) {}
 
   @Get()
   async getProducts(
@@ -35,7 +39,12 @@ export class ProductsController {
     const { userId } = req.user;
     limit = limit > 1000 ? 1000 : limit;
     const products = await this.productsService.paginateProducts(
-      { page, limit, name, route: 'http://localhost:3000/api/products' },
+      {
+        page,
+        limit,
+        name,
+        route: `${this.configService.get('API_URL')}/products`,
+      },
       userId,
     );
     return {

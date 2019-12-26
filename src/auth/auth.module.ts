@@ -5,15 +5,22 @@ import { UsersService } from '../users/users.service';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import {JwtStrategy} from '../auth/jwt.strategy';
+import { JwtStrategy } from '../auth/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRespository } from '../users/users.repository';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserRespository]), UsersModule, PassportModule, JwtModule.register({
-    secret: 'secret key',
-    signOptions: {expiresIn: '2h'},
-  })],
+  imports: [
+    TypeOrmModule.forFeature([UserRespository]),
+    UsersModule,
+    PassportModule,
+    ConfigModule,
+    JwtModule.register({
+      secret: 'secret key',
+      signOptions: { expiresIn: '2h' },
+    }),
+  ],
   providers: [AuthService, LocalStrategy, UsersService, JwtStrategy],
   exports: [AuthService],
 })

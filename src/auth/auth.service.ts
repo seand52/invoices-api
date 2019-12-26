@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from '../users/users.dto';
 import { UserRespository } from '../users/users.repository';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
     private readonly userService: UsersService,
     @InjectRepository(UserRespository)
     private userRepository: UserRespository,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -32,7 +34,9 @@ export class AuthService {
       sub: user.id,
     };
 
-    const jwtService = new JwtService({ secret: 'secret key' });
+    const jwtService = new JwtService({
+      secret: this.configService.get('JWT_SECRET'),
+    });
     return {
       access_token: jwtService.sign(payload),
     };

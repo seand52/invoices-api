@@ -19,11 +19,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { Clients } from './clients.entity';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { ClientInvoices } from './dto/client-invoices.dto';
+import { ConfigService } from '../config/config.service';
 
 @Controller('clients')
 @UseGuards(AuthGuard('jwt'))
 export class ClientsController {
-  constructor(private clientsService: ClientsService) {}
+  constructor(
+    private clientsService: ClientsService,
+    private configService: ConfigService,
+  ) {}
 
   @Get()
   async getClients(
@@ -35,7 +39,12 @@ export class ClientsController {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
     const clients = await this.clientsService.paginateClients(
-      { page, limit, name, route: 'http://localhost:3000/api/clients' },
+      {
+        page,
+        limit,
+        name,
+        route: `${this.configService.get('API_URL')}/clients`,
+      },
       userId,
     );
     return {

@@ -21,12 +21,16 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { FullInvoiceDetails } from './dto/output.dto';
 import { InvoicesService } from './invoices.service';
+import { ConfigService } from '../config/config.service';
 
 @Controller('invoices')
 @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(ClassSerializerInterceptor)
 export class InvoicesController {
-  constructor(private invoicesService: InvoicesService) {}
+  constructor(
+    private invoicesService: InvoicesService,
+    private configService: ConfigService,
+  ) {}
 
   @Get()
   async getInvoices(
@@ -38,7 +42,12 @@ export class InvoicesController {
     const { userId } = req.user;
     limit = limit > 100 ? 100 : limit;
     const invoices = await this.invoicesService.paginateInvoices(
-      { page, limit, clientName, route: 'http://localhost:3000/api/invoices' },
+      {
+        page,
+        limit,
+        clientName,
+        route: `${this.configService.get('API_URL')}/invoices`,
+      },
       userId,
     );
     return {

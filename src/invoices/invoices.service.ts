@@ -134,7 +134,6 @@ export class InvoicesService {
         ),
       };
     });
-    debugger;
     return {
       products: fullProductData,
       client,
@@ -291,11 +290,11 @@ export class InvoicesService {
         tax: parseFloat(data.tax),
       },
       products: products.map(product => ({
-        id: product.id,
         quantity: product.quantity,
         discount: product.discount,
         price: product.price,
         reference: product.reference,
+        description: product.description,
       })),
     };
   }

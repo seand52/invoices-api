@@ -23,6 +23,7 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { FullSalesOrdersDetails } from './dto/output.dto';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { InvoicesService } from '../invoices/invoices.service';
+import { ConfigService } from '../config/config.service';
 
 @Controller('sales-orders')
 @UseGuards(AuthGuard('jwt'))
@@ -31,6 +32,7 @@ export class SalesOrdersController {
   constructor(
     private salesOrdersService: SalesOrdersService,
     private invoiceService: InvoicesService,
+    private configService: ConfigService,
   ) {}
 
   @Get()
@@ -47,7 +49,7 @@ export class SalesOrdersController {
         page,
         limit,
         clientName,
-        route: 'http://localhost:3000/api/sales-orders',
+        route: `${this.configService.get('API_URL')}/sales-orders`,
       },
       userId,
     );
