@@ -37,6 +37,10 @@ const currencyFormatEs = num => {
   ); // use . as a separator
 };
 
+function round(num: number) {
+  return Math.round(num * 100) / 100;
+}
+
 const makeProductsBody = (products: InvoiceProducts[]) => {
   const body = [
     // Table Header
@@ -105,7 +109,7 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
         margin: [0, 5, 0, 0],
       },
       {
-        text: `${product.discount * 100}%`,
+        text: `${round(product.discount * 100).toFixed(2)}%`,
         style: ['itemNumber'],
         fontSize: 9,
         // @ts-ignore
