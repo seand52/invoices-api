@@ -24,6 +24,10 @@ import { SalesOrdersModule } from './sales-orders/sales-orders.module';
         database: configService.get('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get('DATABASE_SYNC'),
+        migrations: [__dirname + '/migration/*.ts'],
+        cli: {
+          migrationsDir: 'migration',
+        },
         logging: true,
       }),
       inject: [ConfigService],
