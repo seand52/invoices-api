@@ -29,12 +29,10 @@ export class CreateClientDto {
 
   @IsOptional()
   @ApiModelProperty({ description: 'nif number of client' })
-  @MaxLength(11)
   numNif?: string;
 
   @IsOptional()
   @ApiModelProperty({ description: 'cif number of client' })
-  @MaxLength(11)
   numCif?: string;
 
   @IsOptional()
@@ -49,6 +47,5 @@ export class CreateClientDto {
 
   @IsOptional()
   @ApiModelProperty({ description: 'Client email' })
-  @IsEmail()
   email?: string;
 }

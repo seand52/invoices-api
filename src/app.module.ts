@@ -23,7 +23,7 @@ import { SalesOrdersModule } from './sales-orders/sales-orders.module';
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('DATABASE_SYNC'),
+        synchronize: false,
         migrations: [__dirname + '/migration/*.ts'],
         cli: {
           migrationsDir: 'migration',
