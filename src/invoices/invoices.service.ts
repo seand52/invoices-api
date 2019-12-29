@@ -237,6 +237,11 @@ export class InvoicesService {
     const salesOrderProducts = await this.salesOrdersToProductsRepository.retrieveSalesOrderProducts(
       salesOrderId,
     );
+    if (!salesOrderProducts.length) {
+      throw new NotAcceptableException(
+        'This is a transport invoice. Make sure you transform the original invoice',
+      );
+    }
     if (!salesOrder) {
       throw new NotFoundException(
         'Not able to find the sales order you are trying to convert',
