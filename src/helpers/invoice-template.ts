@@ -40,6 +40,17 @@ function round(num: number) {
   return Math.round(num * 100) / 100;
 }
 
+const getDocument = clientData => {
+  if (clientData.numNif !== '') {
+    return `NIF: ${clientData.numNif}`;
+  }
+
+  if (clientData.numCif !== '') {
+    return `CIF: ${clientData.numCif}`;
+  }
+  return '';
+};
+
 const makeProductsBody = (products: InvoiceProducts[]) => {
   const body = [
     // Table Header
@@ -127,6 +138,7 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
 };
 
 export const generateInvoiceTemplate = (data: Data) => {
+  debugger;
   return {
     pageMargins: [40, 80, 40, 60],
     header: {
@@ -192,7 +204,9 @@ export const generateInvoiceTemplate = (data: Data) => {
             style: 'invoiceBillingDetails',
           },
           {
-            text: `${data.client.name} \n ${data.client.shopName}`,
+            text: `${data.client.name} \n ${
+              data.client.shopName
+            } \n ${getDocument(data.client)}`,
             style: 'invoiceBillingDetails',
           },
         ],
