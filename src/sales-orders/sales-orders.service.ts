@@ -186,10 +186,12 @@ export class SalesOrdersService {
       salesOrderId,
     );
 
-    await this.salesOrdersToProductsRepository.updateSalesOrderProducts(
-      salesOrderId,
-      products,
-    );
+    if (salesOrderData.products.length) {
+      await this.salesOrdersToProductsRepository.updateSalesOrderProducts(
+        salesOrderId,
+        products,
+      );
+    }
 
     return {
       client,

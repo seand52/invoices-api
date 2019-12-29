@@ -214,10 +214,12 @@ export class InvoicesService {
       invoiceId,
     );
 
-    await this.invoiceToProductsRepository.updateInvoiceProducts(
-      invoiceId,
-      products,
-    );
+    if (invoiceData.products.length) {
+      await this.invoiceToProductsRepository.updateInvoiceProducts(
+        invoiceId,
+        products,
+      );
+    }
     return {
       client,
       products,

@@ -138,7 +138,6 @@ const makeProductsBody = (products: InvoiceProducts[]) => {
 };
 
 export const generateInvoiceTemplate = (data: Data) => {
-  debugger;
   return {
     pageMargins: [40, 80, 40, 60],
     header: {
