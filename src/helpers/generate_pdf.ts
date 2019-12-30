@@ -4,19 +4,19 @@ export const generatePdf = (docDefinition, callback) => {
   try {
     const printer = new PdfPrinter({
       Roboto: {
-        normal: new Buffer(
+        normal: Buffer.from(
           require('pdfmake/build/vfs_fonts.js').pdfMake.vfs[
             'Roboto-Regular.ttf'
           ],
           'base64',
         ),
-        bold: new Buffer(
+        bold: Buffer.from(
           require('pdfmake/build/vfs_fonts.js').pdfMake.vfs[
             'Roboto-Medium.ttf'
           ],
           'base64',
         ),
-        italics: new Buffer(
+        italics: Buffer.from(
           require('pdfmake/build/vfs_fonts.js').pdfMake.vfs[
             'Roboto-Italic.ttf'
           ],
