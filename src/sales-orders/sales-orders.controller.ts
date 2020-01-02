@@ -107,4 +107,14 @@ export class SalesOrdersController {
     );
     return this.salesOrdersService.generatePdf(response, res);
   }
+
+  @Get('pdf/:id')
+  async generateSalesOrderPdf(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req: any,
+    @Response() res: any,
+  ) {
+    const data = await this.salesOrdersService.retrieveInfo(id);
+    return this.salesOrdersService.generatePdf(data, res);
+  }
 }

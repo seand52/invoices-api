@@ -119,4 +119,14 @@ export class InvoicesController {
     );
     return this.invoicesService.generatePdf(response, res);
   }
+
+  @Get('pdf/:id')
+  async generateInvoicePdf(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() req: any,
+    @Response() res: any,
+  ) {
+    const data = await this.invoicesService.retrieveInfo(id);
+    return this.invoicesService.generatePdf(data, res);
+  }
 }

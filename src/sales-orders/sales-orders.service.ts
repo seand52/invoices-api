@@ -16,6 +16,7 @@ import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { FullSalesOrdersDetails } from './dto/output.dto';
 import { SalesOrders } from './sales-orders.entity';
 import { SalesOrdersRepository } from './sales-orders.repository';
+import { BusinessInfoRepository } from '../business-info/business-info.repository';
 const moment = require('moment');
 
 @Injectable()
@@ -30,6 +31,8 @@ export class SalesOrdersService {
     @InjectRepository(SalesOrdersToProductsRepository)
     private salesOrdersToProductsRepository: SalesOrdersToProductsRepository,
     private readonly invoiceService: InvoicesService,
+    @InjectRepository(BusinessInfoRepository)
+    private businessInfoRepository: BusinessInfoRepository,
   ) {}
 
   async paginatesalesOrders(options, userId): Promise<Pagination<SalesOrders>> {
@@ -212,5 +215,50 @@ export class SalesOrdersService {
     return generatePdf(docDefinition, response => {
       res.send(response);
     });
+  }
+
+  async retrieveInfo(id) {
+    const [invoice] = await this.salesOrdersRepository.retrieveInvoiceInfo(id);
+    if (!invoice) {
+      throw new NotFoundException(
+        'The sales order you are trying to generate does not exist',
+      );
+    }
+    const [client, businessInfo] = await Promise.all([
+      this.clientsRepository.findOne(invoice.clientId),
+      this.businessInfoRepository.findOne({ userId: invoice.userId }),
+    ]);
+    const data = this.invoiceService.createInvoiceData(
+      invoice,
+      invoice.salesOrderToProducts,
+    );
+    const totals = this.invoiceService.calculateTotalprice(
+      data.products,
+      data.settings,
+    );
+    return {
+      client,
+      products: data.products.map(item => ({
+        ...item,
+        // @ts-ignore
+        price: parseFloat(item.price),
+        // @ts-ignore
+        discount: parseFloat(item.discount),
+        finalPrice: this.round(
+          // @ts-ignore
+          item.quantity * parseFloat(item.price) * (1 - item.discount),
+        ),
+      })),
+      businessInfo,
+      totals,
+      invoiceData: {
+        date: moment(data.settings.date).format('DD-MM-YYYY'),
+        id: invoice.id,
+      },
+    };
+  }
+
+  round(num: number) {
+    return Math.round(num * 100) / 100;
   }
 }

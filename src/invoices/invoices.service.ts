@@ -24,6 +24,7 @@ import { generateInvoiceTemplate } from '../helpers/invoice-template';
 import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
 import { SalesOrders } from 'src/sales-orders/sales-orders.entity';
 import { SalesOrderToProducts } from 'src/salesOrder-products/salesOrder-products.entity';
+import { InvoiceToProducts } from 'src/invoice-products/invoice-products.entity';
 
 @Injectable()
 export class InvoicesService {
@@ -282,7 +283,7 @@ export class InvoicesService {
 
   createInvoiceData(
     data: SalesOrders,
-    products: SalesOrderToProducts[],
+    products: Array<SalesOrderToProducts | InvoiceToProducts>,
   ): CreateInvoiceDto {
     return {
       settings: {
@@ -303,6 +304,41 @@ export class InvoicesService {
         reference: product.reference,
         description: product.description,
       })),
+    };
+  }
+
+  async retrieveInfo(id) {
+    const [invoice] = await this.invoicesRepository.retrieveInvoiceInfo(id);
+    if (!invoice) {
+      throw new NotFoundException(
+        'The invoice you are trying to generate does not exist',
+      );
+    }
+    const [client, businessInfo] = await Promise.all([
+      this.clientsRepository.findOne(invoice.clientId),
+      this.businessInfoRepository.findOne({ userId: invoice.userId }),
+    ]);
+    const data = this.createInvoiceData(invoice, invoice.invoiceToProducts);
+    const totals = this.calculateTotalprice(data.products, data.settings);
+    return {
+      client,
+      products: data.products.map(item => ({
+        ...item,
+        // @ts-ignore
+        price: parseFloat(item.price),
+        // @ts-ignore
+        discount: parseFloat(item.discount),
+        finalPrice: this.round(
+          // @ts-ignore
+          item.quantity * parseFloat(item.price) * (1 - item.discount),
+        ),
+      })),
+      businessInfo,
+      totals,
+      invoiceData: {
+        date: moment(data.settings.date).format('DD-MM-YYYY'),
+        id: invoice.id,
+      },
     };
   }
 }
