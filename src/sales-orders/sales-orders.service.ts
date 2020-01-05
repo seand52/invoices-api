@@ -213,7 +213,11 @@ export class SalesOrdersService {
   generatePdf(data, res) {
     const docDefinition = generateSalesOrderTemplate(data);
     return generatePdf(docDefinition, response => {
-      res.send(response);
+      const responseObject = {
+        base64: response,
+        id: data.invoiceData.id,
+      };
+      res.send(responseObject);
     });
   }
 
@@ -253,6 +257,9 @@ export class SalesOrdersService {
       totals,
       invoiceData: {
         date: moment(data.settings.date).format('DD-MM-YYYY'),
+        expirationDate: invoice.expirationDate
+          ? moment(invoice.expirationDate).format('DD-MM-YYYY')
+          : null,
         id: invoice.id,
       },
     };

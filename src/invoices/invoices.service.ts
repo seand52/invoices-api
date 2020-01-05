@@ -238,11 +238,7 @@ export class InvoicesService {
     const salesOrderProducts = await this.salesOrdersToProductsRepository.retrieveSalesOrderProducts(
       salesOrderId,
     );
-    if (!salesOrderProducts.length) {
-      throw new NotAcceptableException(
-        'This is a transport invoice. Make sure you transform the original invoice',
-      );
-    }
+
     if (!salesOrder) {
       throw new NotFoundException(
         'Not able to find the sales order you are trying to convert',
@@ -254,6 +250,13 @@ export class InvoicesService {
         'This sales order has already been converted',
       );
     }
+
+    if (!salesOrderProducts.length) {
+      throw new NotAcceptableException(
+        'This is a transport invoice. Make sure you transform the original invoice',
+      );
+    }
+
     const invoiceData = this.createInvoiceData(salesOrder, salesOrderProducts);
     try {
       const data = await this.saveInvoice(invoiceData, userId);
@@ -269,7 +272,11 @@ export class InvoicesService {
   generatePdf(data, res) {
     const docDefinition = generateInvoiceTemplate(data);
     return generatePdf(docDefinition, response => {
-      res.send(response);
+      const responseObject = {
+        base64: response,
+        id: data.invoiceData.id,
+      };
+      res.send(responseObject);
     });
   }
 
