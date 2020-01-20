@@ -261,6 +261,7 @@ export class InvoicesService {
     try {
       const data = await this.saveInvoice(invoiceData, userId);
       await this.salesOrderRepository.update(salesOrder.id, { expired: 1 });
+      data.invoiceData.date = moment().format('DD-MM-YYYY');
       return data;
     } catch (err) {
       throw new InternalServerErrorException(
