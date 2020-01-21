@@ -204,9 +204,12 @@ export const generateSalesOrderTemplate = (data: Data) => {
       {
         columns: [
           {
-            text: `${data.businessInfo.name} \n \n CIF: ${
-              data.businessInfo.cif
-            }  \n \n DATOS BANCARIOS:\n \n (ES49) (2100) 3000 1622 0171 1857`,
+            text: [
+              { text: `${data.businessInfo.name}`, bold: true },
+              `\n \n CIF: ${
+                data.businessInfo.cif
+              }  \n \n DATOS BANCARIOS:\n \n (ES49) (2100) 3000 1622 0171 1857`,
+            ],
             style: 'invoiceBillingDetails',
           },
           {

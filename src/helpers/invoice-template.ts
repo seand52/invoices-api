@@ -197,9 +197,10 @@ export const generateInvoiceTemplate = (data: Data) => {
       {
         columns: [
           {
-            text: `${data.businessInfo.name} \n \n CIF: ${
-              data.businessInfo.cif
-            } `,
+            text: [
+              { text: `${data.businessInfo.name}`, bold: true },
+              `\n \n CIF: ${data.businessInfo.cif} `,
+            ],
             style: 'invoiceBillingDetails',
           },
           {
