@@ -192,11 +192,11 @@ export const generateSalesOrderTemplate = (data: Data) => {
       {
         columns: [
           {
-            text: 'Factura de',
+            text: 'EMISOR',
             style: 'invoiceBillingTitle',
           },
           {
-            text: 'Factura para',
+            text: 'RECEPTOR',
             style: 'invoiceBillingTitle',
           },
         ],
