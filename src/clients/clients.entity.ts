@@ -13,6 +13,12 @@ import { Users } from '../users/users.entity';
 import { Invoices } from '../invoices/invoices.entity';
 import { SalesOrders } from '../sales-orders/sales-orders.entity';
 
+export enum DocumentType {
+  NIF = 'NIF',
+  CIF = 'CIF',
+  INTRA = 'INTRA',
+}
+
 @Entity()
 export class Clients extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -36,11 +42,15 @@ export class Clients extends BaseEntity {
   @Column('varchar', { nullable: false, default: '', length: 7 })
   postcode: string;
 
-  @Column('varchar', { nullable: false, default: '', length: 12 })
-  numNif: string;
+  @Column('varchar', { nullable: false, default: '', length: 100 })
+  documentNum: string;
 
-  @Column('varchar', { nullable: false, default: '', length: 12 })
-  numCif: string;
+  @Column('enum', {
+    nullable: true,
+    enum: DocumentType,
+    default: null,
+  })
+  documentType: DocumentType;
 
   @Column('varchar', { nullable: false, default: '', length: 12 })
   telephone1: string;

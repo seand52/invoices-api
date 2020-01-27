@@ -41,12 +41,13 @@ function round(num: number) {
 }
 
 const getDocument = clientData => {
-  if (clientData.numNif !== '') {
-    return `NIF: ${clientData.numNif}`;
-  }
-
-  if (clientData.numCif !== '') {
-    return `CIF: ${clientData.numCif}`;
+  switch (clientData.documentType) {
+    case 'NIF':
+      return `NIF: ${clientData.documentNum}`
+    case 'CIF':
+      return `CIF: ${clientData.documentNum}`
+    case 'INTRA':
+      return `No. Intracomunitario: ${clientData.documentNum}`
   }
   return '';
 };
@@ -207,7 +208,7 @@ export const generateInvoiceTemplate = (data: Data) => {
           {
             text: `${data.client.name} \n ${
               data.client.shopName
-            } \n ${getDocument(data.client)}`,
+              } \n ${getDocument(data.client)}`,
             style: 'invoiceBillingDetails',
           },
         ],
@@ -231,15 +232,15 @@ export const generateInvoiceTemplate = (data: Data) => {
           {
             text: `${data.businessInfo.address} \n ${data.businessInfo.city} ${
               data.businessInfo.postcode
-            } \n ${data.businessInfo.country} \n ${
+              } \n ${data.businessInfo.country} \n ${
               data.businessInfo.telephone
-            } \n ${data.businessInfo.email}`,
+              } \n ${data.businessInfo.email}`,
             style: 'invoiceBillingAddress',
           },
           {
             text: `${data.client.address} \n ${data.client.city} ${
               data.client.postcode
-            } \n   ${data.client.province}`,
+              } \n   ${data.client.province}`,
             style: 'invoiceBillingAddress',
           },
         ],

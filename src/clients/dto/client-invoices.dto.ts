@@ -6,8 +6,8 @@ export interface ClientInvoices {
   re: number;
   transportPrice: number;
   paymentType: PaymentType;
-  userId: 15;
-  clientId: 2;
+  userId: number;
+  clientId: number;
   date: string;
   createdAt: string;
   updatedAt: string;

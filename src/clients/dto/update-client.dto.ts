@@ -1,5 +1,6 @@
 import { MaxLength, IsOptional, IsEmail } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { DocumentType } from '../clients.entity';
 
 export class UpdateClientDto {
   @IsOptional()
@@ -28,12 +29,13 @@ export class UpdateClientDto {
   postcode?: string;
 
   @IsOptional()
-  @ApiModelProperty({ description: 'nif number of client' })
-  numNif?: string;
+  @ApiModelProperty({ description: 'nif/cif number of client' })
+  documentNum?: string;
 
   @IsOptional()
-  @ApiModelProperty({ description: 'cif number of client' })
-  numCif?: string;
+  @ApiModelProperty({ description: 'type of document' })
+  documentType?: DocumentType;
+
 
   @IsOptional()
   @ApiModelProperty({ description: 'Telephone number of client' })
