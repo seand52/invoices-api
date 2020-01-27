@@ -43,11 +43,11 @@ function round(num: number) {
 const getDocument = clientData => {
   switch (clientData.documentType) {
     case 'NIF':
-      return `NIF: ${clientData.documentNumber}`
+      return `NIF: ${clientData.documentNum}`;
     case 'CIF':
-      return `CIF: ${clientData.documentNumber}`
+      return `CIF: ${clientData.documentNum}`;
     case 'INTRA':
-      return `No. Intracomunitario: ${clientData.documentNumber}`
+      return `No. Intracomunitario: ${clientData.documentNum}`;
   }
   return '';
 };
@@ -219,7 +219,7 @@ export const generateSalesOrderTemplate = (data: Data) => {
             text: [
               { text: `${data.businessInfo.name}`, bold: true },
               `\n \n CIF: ${
-              data.businessInfo.cif
+                data.businessInfo.cif
               }  \n \n DATOS BANCARIOS:\n \n (ES49) (2100) 3000 1622 0171 1857`,
             ],
             style: 'invoiceBillingDetails',
@@ -227,7 +227,7 @@ export const generateSalesOrderTemplate = (data: Data) => {
           {
             text: `${data.client.name} \n ${
               data.client.shopName
-              } \n ${getDocument(data.client)}`,
+            } \n ${getDocument(data.client)}`,
             style: 'invoiceBillingDetails',
           },
         ],
@@ -251,15 +251,15 @@ export const generateSalesOrderTemplate = (data: Data) => {
           {
             text: `${data.businessInfo.address} \n ${data.businessInfo.city} ${
               data.businessInfo.postcode
-              } \n ${data.businessInfo.country} \n ${
+            } \n ${data.businessInfo.country} \n ${
               data.businessInfo.telephone
-              } \n ${data.businessInfo.email}`,
+            } \n ${data.businessInfo.email}`,
             style: 'invoiceBillingAddress',
           },
           {
             text: `${data.client.address} \n ${data.client.city} ${
               data.client.postcode
-              } \n   ${data.client.province}`,
+            } \n   ${data.client.province}`,
             style: 'invoiceBillingAddress',
           },
         ],
