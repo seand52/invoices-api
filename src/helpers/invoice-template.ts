@@ -1,6 +1,7 @@
 import { BusinessInfo } from 'src/business-info/business-info.entity';
 import { Clients } from 'src/clients/clients.entity';
 import { Products } from 'src/products/products.entity';
+import { PaymentType } from 'src/invoices/invoices.entity';
 
 interface Totals {
   productsTotal: number;
@@ -24,6 +25,7 @@ interface Data {
   invoiceData: {
     date: string;
     id: string;
+    paymentType: PaymentType;
   };
 }
 
@@ -43,11 +45,11 @@ function round(num: number) {
 const getDocument = clientData => {
   switch (clientData.documentType) {
     case 'NIF':
-      return `NIF: ${clientData.documentNum}`
+      return `NIF: ${clientData.documentNum}`;
     case 'CIF':
-      return `CIF: ${clientData.documentNum}`
+      return `CIF: ${clientData.documentNum}`;
     case 'INTRA':
-      return `No. Intracomunitario: ${clientData.documentNum}`
+      return `No. Intracomunitario: ${clientData.documentNum}`;
   }
   return '';
 };
@@ -208,7 +210,7 @@ export const generateInvoiceTemplate = (data: Data) => {
           {
             text: `${data.client.name} \n ${
               data.client.shopName
-              } \n ${getDocument(data.client)}`,
+            } \n ${getDocument(data.client)}`,
             style: 'invoiceBillingDetails',
           },
         ],
@@ -232,15 +234,15 @@ export const generateInvoiceTemplate = (data: Data) => {
           {
             text: `${data.businessInfo.address} \n ${data.businessInfo.city} ${
               data.businessInfo.postcode
-              } \n ${data.businessInfo.country} \n ${
+            } \n ${data.businessInfo.country} \n ${
               data.businessInfo.telephone
-              } \n ${data.businessInfo.email}`,
+            } \n ${data.businessInfo.email}`,
             style: 'invoiceBillingAddress',
           },
           {
             text: `${data.client.address} \n ${data.client.city} ${
               data.client.postcode
-              } \n   ${data.client.province}`,
+            } \n   ${data.client.province}`,
             style: 'invoiceBillingAddress',
           },
         ],
@@ -316,7 +318,7 @@ export const generateInvoiceTemplate = (data: Data) => {
             // Item 1
             [
               {
-                text: 'Efectivo',
+                text: data.invoiceData.paymentType,
                 style: 'itemNumber',
                 fontSize: 10,
               },

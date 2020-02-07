@@ -1,6 +1,7 @@
 import { BusinessInfo } from 'src/business-info/business-info.entity';
 import { Clients } from 'src/clients/clients.entity';
 import { Products } from 'src/products/products.entity';
+import { PaymentType } from 'src/invoices/invoices.entity';
 
 interface Totals {
   productsTotal: number;
@@ -25,6 +26,7 @@ interface Data {
     date: string;
     expirationDate: string | null;
     id: string;
+    paymentType: PaymentType;
   };
 }
 
@@ -335,7 +337,7 @@ export const generateSalesOrderTemplate = (data: Data) => {
             // Item 1
             [
               {
-                text: 'Efectivo',
+                text: data.invoiceData.paymentType,
                 style: 'itemNumber',
                 fontSize: 10,
               },

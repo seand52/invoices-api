@@ -14,6 +14,7 @@ import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 import { BusinessInfoRepository } from '../business-info/business-info.repository';
 import { SalesOrderToProducts } from '../salesOrder-products/salesOrder-products.entity';
 import { SalesOrdersToProductsRepository } from '../salesOrder-products/salesOrder-products.repository';
+const moment = require('moment');
 
 const mockClientsRepository = () => ({
   findOne: jest.fn(),
@@ -322,6 +323,7 @@ describe('InvoicesService', () => {
   describe('transform invoice from albaran', () => {
     it('should correctly save the invoice', async () => {
       const salesOrderId = 5;
+
       salesOrderRepository.findOne.mockResolvedValue({
         expired: 0,
       });
@@ -363,7 +365,7 @@ describe('InvoicesService', () => {
         {
           settings: {
             clientId: 5,
-            date: '2019/12/12',
+            date: moment().format('YYYY-MM-DD'), // use current date because when the albaran is transformed we set the invoice to the current date
             re: 0.052,
             transportPrice: 10,
             paymentType: 'Efectivo',

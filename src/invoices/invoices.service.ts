@@ -182,6 +182,7 @@ export class InvoicesService {
       invoiceData: {
         date: moment(invoiceData.settings.date).format('DD-MM-YYYY'),
         id: result.identifiers[0].id,
+        paymentType: invoiceData.settings.paymentType,
       },
     };
   }
@@ -229,6 +230,7 @@ export class InvoicesService {
       invoiceData: {
         date: moment(invoiceData.settings.date).format('DD-MM-YYYY'),
         id: invoiceId,
+        paymentType: invoiceData.settings.paymentType,
       },
     };
   }
@@ -346,6 +348,7 @@ export class InvoicesService {
       invoiceData: {
         date: moment(data.settings.date).format('DD-MM-YYYY'),
         id: invoice.id,
+        paymentType: invoice.paymentType,
       },
     };
   }

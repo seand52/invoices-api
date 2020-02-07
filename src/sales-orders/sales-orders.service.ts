@@ -133,13 +133,13 @@ export class SalesOrdersService {
         totalPrice: salesOrderData.settings.transportPrice,
       });
     }
-
     return {
       client,
       products,
       businessInfo,
       totals,
       invoiceData: {
+        paymentType: salesOrderData.settings.paymentType,
         id: result.identifiers[0].id,
         date: moment(salesOrderData.settings.date).format('DD-MM-YYYY'),
         expirationDate: salesOrderData.settings.expirationDate
@@ -195,7 +195,6 @@ export class SalesOrdersService {
         products,
       );
     }
-
     return {
       client,
       products,
@@ -203,6 +202,7 @@ export class SalesOrdersService {
       totals,
       invoiceData: {
         id: salesOrderId,
+        paymentType: salesOrderData.settings.paymentType,
         date: moment(salesOrderData.settings.date).format('DD-MM-YYYY'),
         expirationDate: salesOrderData.settings.expirationDate
           ? moment(salesOrderData.settings.expirationDate).format('DD-MM-YYYY')
@@ -261,6 +261,7 @@ export class SalesOrdersService {
           ? moment(invoice.expirationDate).format('DD-MM-YYYY')
           : null,
         id: invoice.id,
+        paymentType: invoice.paymentType,
       },
     };
   }
