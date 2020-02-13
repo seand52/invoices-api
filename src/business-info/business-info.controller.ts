@@ -43,6 +43,7 @@ export class BusinessInfoController {
     @Body() businessInfoData: UpdateBusinessInfoDto,
     @Request() req: any,
   ): Promise<BusinessInfo> {
+    debugger;
     const { userId } = req.user;
     return this.businessInfoService.updateBusinessInfo(
       businessInfoData,
