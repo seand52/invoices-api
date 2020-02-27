@@ -1,5 +1,5 @@
 import { BusinessInfo } from 'src/business-info/business-info.entity';
-import { Clients } from 'src/clients/clients.entity';
+import { Clients, DocumentType } from '../clients/clients.entity';
 import { Products } from 'src/products/products.entity';
 import { PaymentType } from 'src/invoices/invoices.entity';
 
@@ -44,12 +44,14 @@ function round(num: number) {
 
 const getDocument = clientData => {
   switch (clientData.documentType) {
-    case 'NIF':
+    case DocumentType.NIF:
       return `NIF: ${clientData.documentNum}`;
-    case 'CIF':
+    case DocumentType.CIF:
       return `CIF: ${clientData.documentNum}`;
-    case 'INTRA':
+    case DocumentType.INTRA:
       return `No. Intracomunitario: ${clientData.documentNum}`;
+    case DocumentType.PASSPORT:
+      return `No. Pasaporte: ${clientData.documentNum}`;
   }
   return '';
 };

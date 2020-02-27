@@ -17,6 +17,7 @@ export enum DocumentType {
   NIF = 'NIF',
   CIF = 'CIF',
   INTRA = 'INTRA',
+  PASSPORT = 'PASSPORT',
 }
 
 @Entity()
