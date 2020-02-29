@@ -62,6 +62,7 @@ export class SalesOrdersService {
       items: result.items.map(item => ({
         ...item,
         date: item.formatDate(item.date),
+        isTransport: item.transportPrice === item.totalPrice,
       })),
     };
   }
