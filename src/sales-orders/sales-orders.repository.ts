@@ -27,6 +27,13 @@ export class SalesOrdersRepository extends Repository<SalesOrders> {
       .execute();
   }
 
+  async findClientSalesOrders(clientId) {
+    const salesOrders = await this.createQueryBuilder('sales_order')
+      .where('sales_order.clientId = :clientId', { clientId })
+      .getMany();
+    return this.formatSalesOrders(salesOrders);
+  }
+
   updateSalesOrder(settingsData, salesOrderId) {
     return this.createQueryBuilder()
       .update(SalesOrders)

@@ -13,7 +13,10 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { Clients } from './clients.entity';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InvoicesRepository } from '../invoices/invoices.repository';
-import { ClientInvoices } from './dto/client-invoices.dto';
+import { ClientInvoices, SpendDataResponse } from './dto/client-invoices.dto';
+import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
+import { ProductsRepository } from '../products/products.repository';
+const moment = require('moment');
 
 @Injectable()
 export class ClientsService {
@@ -22,6 +25,10 @@ export class ClientsService {
     private clientsRepository: ClientsRepository,
     @InjectRepository(InvoicesRepository)
     private invoicesRepository: InvoicesRepository,
+    @InjectRepository(SalesOrdersRepository)
+    private salesOrdersRepository: SalesOrdersRepository,
+    @InjectRepository(ProductsRepository)
+    private productsRepository: ProductsRepository,
   ) {}
 
   async getClientById(id: number): Promise<Clients> {
@@ -112,5 +119,50 @@ export class ClientsService {
   async getClientInvoices(clientId: number): Promise<ClientInvoices[]> {
     const invoices = await this.invoicesRepository.findClientInvoices(clientId);
     return invoices;
+  }
+  async getClientSalesOrders(clientId: number): Promise<ClientInvoices[]> {
+    const invoices = await this.salesOrdersRepository.findClientSalesOrders(
+      clientId,
+    );
+    return invoices;
+  }
+
+  async getTotalSpend(clientId: number): Promise<SpendDataResponse> {
+    const invoices = await this.invoicesRepository.findClientInvoices(clientId);
+    return this.makeBarChartData(invoices);
+  }
+
+  makeBarChartData(invoices): SpendDataResponse {
+    const obj = {};
+    invoices.forEach(item => {
+      const year = moment(item.date).year();
+      const month = moment(item.date).format('MMMM');
+      if (!obj.hasOwnProperty(year)) {
+        obj[year] = [
+          {
+            name: month,
+            spend: item.totalPrice,
+          },
+        ];
+      } else {
+        const monthObjIndex = obj[year].findIndex(
+          _item => _item.name === month,
+        );
+        if (monthObjIndex >= 0) {
+          obj[year][monthObjIndex].spend += item.totalPrice;
+        } else {
+          obj[year].push({
+            name: month,
+            spend: item.totalPrice,
+          });
+        }
+      }
+    });
+    return obj;
+  }
+
+  async getPopularProducts(clientId: number) {
+    const products = await this.productsRepository.getPopularProducts(clientId);
+    return products;
   }
 }
