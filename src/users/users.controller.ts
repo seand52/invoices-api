@@ -36,7 +36,6 @@ export class UsersController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Request() req, @Body() user: UserDto): Promise<AuthResponse> {
-    debugger;
     const auth = await this.authService.login({
       id: req.user.id,
       username: req.user.username,
@@ -44,7 +43,6 @@ export class UsersController {
     const businessInfo = await this.businessInfoService.getBusinessInfo(
       req.user.id,
     );
-    debugger;
     return { access_token: auth.access_token, businessInfo };
   }
 }
