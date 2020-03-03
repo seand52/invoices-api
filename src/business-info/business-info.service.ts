@@ -15,7 +15,7 @@ export class BusinessInfoService {
     private businessInfoRepository: BusinessInfoRepository,
   ) {}
 
-  async getBusinessInfo(userId) {
+  async getBusinessInfo(userId): Promise<any> {
     const [info] = await this.businessInfoRepository.find({ userId });
 
     if (!info) {
