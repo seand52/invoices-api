@@ -16,6 +16,7 @@ import { InvoicesRepository } from '../invoices/invoices.repository';
 import { ClientInvoices, SpendDataResponse } from './dto/client-invoices.dto';
 import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
 import { ProductsRepository } from '../products/products.repository';
+import { initialBarChartData } from '../helpers/chartData';
 const moment = require('moment');
 
 @Injectable()
@@ -137,26 +138,13 @@ export class ClientsService {
     invoices.forEach(item => {
       const year = moment(item.date).year();
       const month = moment(item.date).format('MMMM');
+      const monthObjIndex = initialBarChartData.findIndex(
+        _item => _item.name === month,
+      );
       if (!obj.hasOwnProperty(year)) {
-        obj[year] = [
-          {
-            name: month,
-            spend: item.totalPrice,
-          },
-        ];
-      } else {
-        const monthObjIndex = obj[year].findIndex(
-          _item => _item.name === month,
-        );
-        if (monthObjIndex >= 0) {
-          obj[year][monthObjIndex].spend += item.totalPrice;
-        } else {
-          obj[year].push({
-            name: month,
-            spend: item.totalPrice,
-          });
-        }
+        obj[year] = initialBarChartData.map(a => ({ ...a }));
       }
+      obj[year][monthObjIndex].spend += item.totalPrice;
     });
     return obj;
   }

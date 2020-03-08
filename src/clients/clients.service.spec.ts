@@ -256,6 +256,47 @@ describe('ClientsServices', () => {
       expect(result).toEqual({
         2019: [
           {
+            name: 'January',
+            spend: 0,
+          },
+
+          {
+            name: 'February',
+            spend: 0,
+          },
+          {
+            name: 'March',
+            spend: 0,
+          },
+          {
+            name: 'April',
+            spend: 0,
+          },
+          {
+            name: 'May',
+            spend: 0,
+          },
+          {
+            name: 'June',
+            spend: 0,
+          },
+          {
+            name: 'July',
+            spend: 0,
+          },
+          {
+            name: 'August',
+            spend: 0,
+          },
+          {
+            name: 'September',
+            spend: 0,
+          },
+          {
+            name: 'October',
+            spend: 0,
+          },
+          {
             name: 'November',
             spend: 50,
           },
@@ -268,6 +309,51 @@ describe('ClientsServices', () => {
           {
             name: 'January',
             spend: 200,
+          },
+
+          {
+            name: 'February',
+            spend: 0,
+          },
+          {
+            name: 'March',
+            spend: 0,
+          },
+          {
+            name: 'April',
+            spend: 0,
+          },
+          {
+            name: 'May',
+            spend: 0,
+          },
+          {
+            name: 'June',
+            spend: 0,
+          },
+          {
+            name: 'July',
+            spend: 0,
+          },
+          {
+            name: 'August',
+            spend: 0,
+          },
+          {
+            name: 'September',
+            spend: 0,
+          },
+          {
+            name: 'October',
+            spend: 0,
+          },
+          {
+            name: 'November',
+            spend: 0,
+          },
+          {
+            name: 'December',
+            spend: 0,
           },
         ],
       });
