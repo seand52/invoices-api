@@ -379,7 +379,23 @@ describe('ClientsServices', () => {
       expect(productsRepository.getPopularProducts).not.toHaveBeenCalled();
       const result = await clientsService.getPopularProducts(15);
       expect(productsRepository.getPopularProducts).toHaveBeenCalledWith(15);
-      expect(result).toEqual(mockProductsResult);
+      expect(result).toEqual([
+        {
+          '# of items sold': 14,
+          fullMark: 14,
+          reference: 'REF1',
+        },
+        {
+          '# of items sold': 10,
+          fullMark: 14,
+          reference: 'REF2',
+        },
+        {
+          '# of items sold': 8,
+          fullMark: 14,
+          reference: 'REF3',
+        },
+      ]);
     });
   });
   describe('get client sales orders', () => {
