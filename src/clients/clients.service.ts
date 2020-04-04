@@ -134,7 +134,7 @@ export class ClientsService {
   }
 
   makeBarChartData(invoices): SpendDataResponse {
-    const obj = {};
+    const obj = { TOTAL: initialBarChartData.map(a => ({ ...a })) };
     invoices.forEach(item => {
       const year = moment(item.date).year();
       const month = moment(item.date).format('MMMM');
@@ -144,7 +144,12 @@ export class ClientsService {
       if (!obj.hasOwnProperty(year)) {
         obj[year] = initialBarChartData.map(a => ({ ...a }));
       }
-      obj[year][monthObjIndex].spend += item.totalPrice;
+      obj[year][monthObjIndex].spend =
+        Math.round((obj[year][monthObjIndex].spend + item.totalPrice) * 100) /
+        100;
+      obj.TOTAL[monthObjIndex].spend =
+        Math.round((obj.TOTAL[monthObjIndex].spend + item.totalPrice) * 100) /
+        100;
     });
     return obj;
   }

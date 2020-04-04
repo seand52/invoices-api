@@ -251,9 +251,72 @@ describe('ClientsServices', () => {
           createdAt: '2019-11-20T15:47:08.361Z',
           updatedAt: '2019-11-20T15:47:08.361Z',
         },
+        {
+          id: 1,
+          totalPrice: 70,
+          re: 5.2,
+          transportPrice: 10.0,
+          paymentType: 'Transferencia',
+          userId: 15,
+          clientId: 2,
+          date: '2020-11-20T20:26:15.000Z',
+          createdAt: '2020-11-20T20:26:15.000Z',
+          updatedAt: '2020-11-20T20:26:15.000Z',
+        },
       ];
       const result = clientsService.makeBarChartData(invoices);
       expect(result).toEqual({
+        TOTAL: [
+          {
+            name: 'January',
+            spend: 200,
+          },
+
+          {
+            name: 'February',
+            spend: 0,
+          },
+          {
+            name: 'March',
+            spend: 0,
+          },
+          {
+            name: 'April',
+            spend: 0,
+          },
+          {
+            name: 'May',
+            spend: 0,
+          },
+          {
+            name: 'June',
+            spend: 0,
+          },
+          {
+            name: 'July',
+            spend: 0,
+          },
+          {
+            name: 'August',
+            spend: 0,
+          },
+          {
+            name: 'September',
+            spend: 0,
+          },
+          {
+            name: 'October',
+            spend: 0,
+          },
+          {
+            name: 'November',
+            spend: 120,
+          },
+          {
+            name: 'December',
+            spend: 120,
+          },
+        ],
         2019: [
           {
             name: 'January',
@@ -349,7 +412,7 @@ describe('ClientsServices', () => {
           },
           {
             name: 'November',
-            spend: 0,
+            spend: 70,
           },
           {
             name: 'December',
