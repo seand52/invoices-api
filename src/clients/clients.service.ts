@@ -157,6 +157,7 @@ export class ClientsService {
   async getPopularProducts(clientId: number) {
     const products = await this.productsRepository.getPopularProducts(clientId);
     const maxCount = Math.max(...products.map(item => item.count));
+    debugger;
     return products.map(item => ({
       reference: item.reference,
       fullMark: maxCount,
