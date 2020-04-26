@@ -12,7 +12,7 @@ export class ProductsRepository extends Repository<Products> {
 
   getPopularProducts(clientId: number) {
     return this.query(`
-    SELECT COUNT(quantity) as count, reference
+    SELECT SUM(quantity) as count, reference
     FROM invoice_to_products
     JOIN invoices i on invoice_to_products.invoiceId = i.id
     WHERE i.clientId = ${clientId}
