@@ -54,6 +54,11 @@ export class SalesOrdersService {
         name: '%' + options.clientName + '%',
       });
     }
+    if (options.clientId !== '') {
+      queryBuilder.where('client.id=:id', {
+        id: options.clientId,
+      });
+    }
     queryBuilder.orderBy('sales_order.id', 'DESC');
     const result = await paginate<SalesOrders>(queryBuilder, options);
     return {

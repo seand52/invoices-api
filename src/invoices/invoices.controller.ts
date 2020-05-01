@@ -37,6 +37,7 @@ export class InvoicesController {
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
     @Query('clientName') clientName: string = '',
+    @Query('clientId') clientId: string = '',
     @Request() req: any,
   ) {
     const { userId } = req.user;
@@ -46,6 +47,7 @@ export class InvoicesController {
         page,
         limit,
         clientName,
+        clientId,
         route: `${this.configService.get('API_URL')}/invoices`,
       },
       userId,

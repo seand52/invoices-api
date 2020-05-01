@@ -56,6 +56,11 @@ export class InvoicesService {
         name: '%' + options.clientName + '%',
       });
     }
+    if (options.clientId !== '') {
+      queryBuilder.where('client.id=:id', {
+        id: options.clientId,
+      });
+    }
     queryBuilder.orderBy('invoice.id', 'DESC');
     const result = await paginate<Invoices>(queryBuilder, options);
     return {
