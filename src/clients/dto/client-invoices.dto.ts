@@ -12,3 +12,26 @@ export interface ClientInvoices {
   createdAt: string;
   updatedAt: string;
 }
+
+type Months =
+  | 'January'
+  | 'February'
+  | 'March'
+  | 'April'
+  | 'May'
+  | 'June'
+  | 'July'
+  | 'August'
+  | 'September'
+  | 'October'
+  | 'November'
+  | 'December';
+
+interface SpendData {
+  name: Months;
+  spend: number;
+}
+
+export interface SpendDataResponse {
+  [key: number]: SpendData[];
+}

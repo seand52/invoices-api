@@ -13,7 +13,11 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { Clients } from './clients.entity';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InvoicesRepository } from '../invoices/invoices.repository';
-import { ClientInvoices } from './dto/client-invoices.dto';
+import { ClientInvoices, SpendDataResponse } from './dto/client-invoices.dto';
+import { SalesOrdersRepository } from '../sales-orders/sales-orders.repository';
+import { ProductsRepository } from '../products/products.repository';
+import { initialBarChartData } from '../helpers/chartData';
+const moment = require('moment');
 
 @Injectable()
 export class ClientsService {
@@ -22,6 +26,10 @@ export class ClientsService {
     private clientsRepository: ClientsRepository,
     @InjectRepository(InvoicesRepository)
     private invoicesRepository: InvoicesRepository,
+    @InjectRepository(SalesOrdersRepository)
+    private salesOrdersRepository: SalesOrdersRepository,
+    @InjectRepository(ProductsRepository)
+    private productsRepository: ProductsRepository,
   ) {}
 
   async getClientById(id: number): Promise<Clients> {
@@ -112,5 +120,48 @@ export class ClientsService {
   async getClientInvoices(clientId: number): Promise<ClientInvoices[]> {
     const invoices = await this.invoicesRepository.findClientInvoices(clientId);
     return invoices;
+  }
+  async getClientSalesOrders(clientId: number): Promise<ClientInvoices[]> {
+    const invoices = await this.salesOrdersRepository.findClientSalesOrders(
+      clientId,
+    );
+    return invoices;
+  }
+
+  async getTotalSpend(clientId: number): Promise<SpendDataResponse> {
+    const invoices = await this.invoicesRepository.findClientInvoices(clientId);
+    return this.makeBarChartData(invoices);
+  }
+
+  makeBarChartData(invoices): SpendDataResponse {
+    const obj = { TOTAL: initialBarChartData.map(a => ({ ...a })) };
+    invoices.forEach(item => {
+      const year = moment(item.date).year();
+      const month = moment(item.date).format('MMMM');
+      const monthObjIndex = initialBarChartData.findIndex(
+        _item => _item.name === month,
+      );
+      if (!obj.hasOwnProperty(year)) {
+        obj[year] = initialBarChartData.map(a => ({ ...a }));
+      }
+      obj[year][monthObjIndex].spend =
+        Math.round((obj[year][monthObjIndex].spend + item.totalPrice) * 100) /
+        100;
+      obj.TOTAL[monthObjIndex].spend =
+        Math.round((obj.TOTAL[monthObjIndex].spend + item.totalPrice) * 100) /
+        100;
+    });
+    return obj;
+  }
+
+  async getPopularProducts(clientId: number) {
+    const products = await this.productsRepository.getPopularProducts(clientId);
+    const maxCount = Math.max(...products.map(item => item.count));
+    debugger;
+    return products.map(item => ({
+      reference: item.reference,
+      fullMark: maxCount,
+      '# of items sold': item.count,
+    }));
   }
 }

@@ -18,7 +18,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Clients } from './clients.entity';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { ClientInvoices } from './dto/client-invoices.dto';
+import { ClientInvoices, SpendDataResponse } from './dto/client-invoices.dto';
 import { ConfigService } from '../config/config.service';
 
 @Controller('clients')
@@ -69,6 +69,25 @@ export class ClientsController {
     @Param('clientId', ParseIntPipe) clientId: number,
   ): Promise<ClientInvoices[]> {
     return this.clientsService.getClientInvoices(clientId);
+  }
+
+  @Get(':clientId/sales-orders')
+  async getClientSalesOrders(
+    @Param('clientId', ParseIntPipe) clientId: number,
+  ): Promise<ClientInvoices[]> {
+    return this.clientsService.getClientSalesOrders(clientId);
+  }
+
+  @Get(':clientId/invoices/spend')
+  async getTotalSpend(
+    @Param('clientId', ParseIntPipe) clientId: number,
+  ): Promise<SpendDataResponse> {
+    return this.clientsService.getTotalSpend(clientId);
+  }
+
+  @Get(':clientId/products')
+  async getPopularProducts(@Param('clientId', ParseIntPipe) clientId: number) {
+    return this.clientsService.getPopularProducts(clientId);
   }
 
   @Post()

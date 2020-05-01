@@ -10,6 +10,21 @@ export class ProductsRepository extends Repository<Products> {
     return this.formatProducts(products);
   }
 
+  getPopularProducts(clientId: number) {
+    return this.query(
+      `
+    SELECT SUM(quantity) as count, reference
+    FROM invoice_to_products
+    JOIN invoices i on invoice_to_products.invoiceId = i.id
+    WHERE i.clientId = ?
+    GROUP BY reference
+    ORDER BY count
+    DESC limit 10;
+    `,
+      [clientId],
+    );
+  }
+
   formatProducts(data) {
     return data.map(item => ({
       ...item,
